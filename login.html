@@ -6,40 +6,40 @@
   <title>수첩 로그인</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/admin.css" />
   <link rel="icon" href="assets/korva-logo.gif" type="image/gif" />
 </head>
 <body class="auth-body">
-  <div class="auth-shell">
-    <div class="auth-brand auth-brand--korva">
-      <img class="auth-brand__logo" src="assets/korva-logo.gif" alt="대한민국재향군인회" width="220" height="60" />
-      <span>
-        <strong>수첩</strong>
-        <small>대한민국재향군인회</small>
-      </span>
-    </div>
+  <div class="auth-atmosphere" aria-hidden="true"></div>
 
-    <form class="auth-card" id="loginForm">
-      <h1>로그인</h1>
-      <p class="auth-lead">수첩을 보려면 로그인해 주세요.</p>
+  <main class="auth-shell">
+    <header class="auth-hero">
+      <div class="auth-hero__mark">
+        <img src="assets/korva-logo.gif" alt="대한민국재향군인회" width="200" height="54" />
+      </div>
+      <p class="auth-hero__product">수첩</p>
+      <p class="auth-hero__tagline">재향군인회 연락처를 한곳에서</p>
+    </header>
 
+    <form class="auth-panel" id="loginForm">
       <label class="field">
         <span>아이디</span>
-        <input type="text" name="username" id="username" autocomplete="username" required autofocus />
+        <input type="text" name="username" id="username" autocomplete="username" required autofocus placeholder="아이디 입력" />
       </label>
 
       <label class="field">
         <span>비밀번호</span>
-        <input type="password" name="password" id="password" autocomplete="current-password" required />
+        <input type="password" name="password" id="password" autocomplete="current-password" required placeholder="비밀번호 입력" />
       </label>
 
       <p class="form-error" id="loginError" hidden></p>
 
-      <button type="submit" class="primary-btn" id="loginBtn">로그인</button>
+      <button type="submit" class="auth-submit" id="loginBtn">로그인</button>
     </form>
-  </div>
+  </main>
+
   <script src="js/auth.js" charset="utf-8"></script>
   <script src="js/login.js" charset="utf-8"></script>
 </body>
