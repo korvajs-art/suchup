@@ -38,5 +38,5 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy . --project-name=suchup
+          command: pages deploy . --project-name=suchup --branch=production
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
