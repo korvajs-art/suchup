@@ -33,6 +33,7 @@
       <nav class="drawer__nav">
         <a href="index.html" class="drawer__link is-active">연락처</a>
         <a href="admin.html" class="drawer__link">관리자</a>
+        <button type="button" class="drawer__link drawer__link--btn" id="passwordBtn">비밀번호 변경</button>
         <button type="button" class="drawer__link drawer__link--btn" id="logoutBtn">로그아웃</button>
       </nav>
     </aside>
@@ -93,7 +94,23 @@
     </main>
   </div>
 
+  <div class="modal" id="passwordModal" hidden>
+    <div class="modal__backdrop" data-close-pw></div>
+    <form class="modal__card" id="passwordForm">
+      <h2>비밀번호 변경</h2>
+      <label class="field"><span>현재 비밀번호</span><input type="password" id="pwCurrent" required autocomplete="current-password" /></label>
+      <label class="field"><span>새 비밀번호</span><input type="password" id="pwNew" required autocomplete="new-password" minlength="4" /></label>
+      <label class="field"><span>새 비밀번호 확인</span><input type="password" id="pwNew2" required autocomplete="new-password" minlength="4" /></label>
+      <p class="form-error" id="pwError" hidden></p>
+      <div class="modal__actions">
+        <button type="button" class="ghost-btn" data-close-pw>취소</button>
+        <button type="submit" class="primary-btn" id="pwSaveBtn">변경</button>
+      </div>
+    </form>
+  </div>
+
   <script src="js/auth.js" charset="utf-8"></script>
+  <script src="js/sort.js" charset="utf-8"></script>
   <script src="js/app.js" charset="utf-8"></script>
 </body>
 </html>

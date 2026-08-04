@@ -16,14 +16,10 @@
     <form class="admin-gate__card" id="adminGateForm">
       <img class="admin-gate__logo" src="assets/korva-logo.gif" alt="대한민국재향군인회" width="180" height="48" />
       <h1>관리자 인증</h1>
-      <p>관리 화면은 암호 확인 후 이용할 수 있습니다.</p>
-      <label class="field">
-        <span>아이디</span>
-        <input type="text" id="gateUsername" autocomplete="username" required />
-      </label>
+      <p>관리 암호를 입력해 주세요.</p>
       <label class="field">
         <span>비밀번호</span>
-        <input type="password" id="gatePassword" autocomplete="current-password" required />
+        <input type="password" id="gatePassword" autocomplete="current-password" required autofocus />
       </label>
       <p class="form-error" id="gateError" hidden></p>
       <button type="submit" class="primary-btn" id="gateBtn">관리자 입장</button>

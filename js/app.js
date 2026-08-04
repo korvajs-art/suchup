@@ -81,9 +81,17 @@
   }
 
   function initFilters() {
-    fillSelect(els.regionFilter, uniqueSorted(CONTACTS.map((c) => c.region).filter(Boolean)), L.region);
+    fillSelect(
+      els.regionFilter,
+      SuchupSort.uniqueSortedRegions(CONTACTS.map((c) => c.region)),
+      L.region
+    );
     fillSelect(els.deptFilter, uniqueSorted(CONTACTS.map((c) => c.dept).filter(Boolean)), L.dept);
-    fillSelect(els.positionFilter, uniqueSorted(CONTACTS.map((c) => c.position).filter(Boolean)), L.position);
+    fillSelect(
+      els.positionFilter,
+      SuchupSort.uniqueSortedPositions(CONTACTS.map((c) => c.position)),
+      L.position
+    );
   }
 
   function getFilteredContacts() {
@@ -92,7 +100,7 @@
     const dept = els.deptFilter.value;
     const position = els.positionFilter.value;
 
-    return CONTACTS.filter((c) => {
+    const filtered = CONTACTS.filter((c) => {
       if (region && c.region !== region) return false;
       if (dept && c.dept !== dept) return false;
       if (position && c.position !== position) return false;
@@ -119,6 +127,7 @@
         .toLowerCase();
       return haystack.includes(query);
     });
+    return SuchupSort.sortContacts(filtered);
   }
 
   function iconPhone() {
@@ -287,9 +296,6 @@
       setDrawerOpen(!els.drawer.classList.contains("is-open"));
     });
     els.drawerBackdrop.addEventListener("click", () => setDrawerOpen(false));
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") setDrawerOpen(false);
-    });
     if (els.retryBtn) els.retryBtn.addEventListener("click", loadContacts);
 
     const logoutBtn = document.getElementById("logoutBtn");
@@ -302,6 +308,62 @@
         }
       });
     }
+
+    const passwordBtn = document.getElementById("passwordBtn");
+    const passwordModal = document.getElementById("passwordModal");
+    const passwordForm = document.getElementById("passwordForm");
+    const pwError = document.getElementById("pwError");
+
+    function openPasswordModal() {
+      if (!passwordModal) return;
+      pwError.hidden = true;
+      pwError.textContent = "";
+      passwordForm.reset();
+      passwordModal.hidden = false;
+      setDrawerOpen(false);
+      document.getElementById("pwCurrent").focus();
+    }
+
+    function closePasswordModal() {
+      if (!passwordModal) return;
+      passwordModal.hidden = true;
+    }
+
+    if (passwordBtn) passwordBtn.addEventListener("click", openPasswordModal);
+    if (passwordModal) {
+      passwordModal.addEventListener("click", (e) => {
+        if (e.target.matches("[data-close-pw]")) closePasswordModal();
+      });
+    }
+    if (passwordForm) {
+      passwordForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        pwError.hidden = true;
+        const currentPassword = document.getElementById("pwCurrent").value;
+        const newPassword = document.getElementById("pwNew").value;
+        const newPassword2 = document.getElementById("pwNew2").value;
+        if (newPassword !== newPassword2) {
+          pwError.hidden = false;
+          pwError.textContent = "\uC0C8 \uBE44\uBC00\uBC88\uD638\uAC00 \uC77C\uCE58\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.";
+          return;
+        }
+        try {
+          await SuchupAuth.changePassword(currentPassword, newPassword);
+          closePasswordModal();
+          alert("\uBE44\uBC00\uBC88\uD638\uAC00 \uBCC0\uACBD\uB418\uC5C8\uC2B5\uB2C8\uB2E4.");
+        } catch (err) {
+          pwError.hidden = false;
+          pwError.textContent = err.message || "\uBE44\uBC00\uBC88\uD638 \uBCC0\uACBD\uC5D0 \uC2E4\uD328\uD588\uC2B5\uB2C8\uB2E4.";
+        }
+      });
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        setDrawerOpen(false);
+        closePasswordModal();
+      }
+    });
   }
 
   bindEvents();

@@ -35,7 +35,6 @@
     gate: document.getElementById("adminGate"),
     app: document.getElementById("adminApp"),
     gateForm: document.getElementById("adminGateForm"),
-    gateUser: document.getElementById("gateUsername"),
     gatePass: document.getElementById("gatePassword"),
     gateError: document.getElementById("gateError"),
     gateBtn: document.getElementById("gateBtn"),
@@ -181,18 +180,9 @@
   }
 
   async function boot() {
-    try {
-      const me = await SuchupAuth.me();
-      if (me.authenticated && me.admin?.username) {
-        els.gateUser.value = me.admin.username;
-      }
-    } catch (_) {
-      /* ignore */
-    }
-
     els.gate.hidden = false;
     els.app.hidden = true;
-    (els.gateUser.value ? els.gatePass : els.gateUser).focus();
+    els.gatePass.focus();
   }
 
   els.gateForm.addEventListener("submit", async (e) => {
@@ -200,11 +190,10 @@
     showGateError("");
     els.gateBtn.disabled = true;
     try {
-      const username = els.gateUser.value.trim();
       const password = els.gatePass.value;
-      const result = await SuchupAuth.login(username, password);
+      const result = await SuchupAuth.adminGate(password);
       els.gatePass.value = "";
-      await unlockAdmin(result.admin?.username || username);
+      await unlockAdmin(result.admin?.username || "Admin");
     } catch (err) {
       showGateError(err.message || "\uC554\uD638\uAC00 \uC62C\uBC14\uB974\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.");
     } finally {

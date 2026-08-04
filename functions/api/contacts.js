@@ -7,6 +7,7 @@ import {
   normalizeContact,
   bindContactValues,
 } from "../_lib/contacts.js";
+import { sortContacts } from "../_lib/sort.js";
 
 export async function onRequestGet(context) {
   const { request, env } = context;
@@ -18,11 +19,11 @@ export async function onRequestGet(context) {
 
   const { results } = await env.DB.prepare(
     `SELECT ${CONTACT_COLUMNS}
-     FROM contacts
-     ORDER BY name COLLATE NOCASE ASC, id ASC`
+     FROM contacts`
   ).all();
 
-  return json({ contacts: (results || []).map(mapContact) });
+  const contacts = sortContacts((results || []).map(mapContact));
+  return json({ contacts });
 }
 
 export async function onRequestPost(context) {
