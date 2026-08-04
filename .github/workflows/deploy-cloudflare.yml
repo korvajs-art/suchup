@@ -18,12 +18,15 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Apply D1 schema (remote)
+      # Tables are also created/migrated on first API request via ensureSchema.
+      # Optional: add Account > D1 > Edit to the API token if you want CLI schema apply.
+      - name: Apply D1 schema (remote, optional)
+        continue-on-error: true
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
