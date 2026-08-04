@@ -78,7 +78,7 @@
   display: block;
   width: min(300px, 82vw);
   height: auto;
-  margin: 0 auto 22px;
+  margin: 0 auto;
   object-fit: contain;
   animation: auth-logo-in 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.05s both;
 }
@@ -92,17 +92,6 @@
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.auth-hero__tagline {
-  margin: 0;
-  font-family: "Noto Serif KR", "Noto Sans KR", serif;
-  font-size: clamp(1.35rem, 4.8vw, 1.7rem);
-  font-weight: 600;
-  letter-spacing: -0.04em;
-  line-height: 1.45;
-  color: var(--auth-navy);
-  animation: auth-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
 }
 
 .auth-panel {
