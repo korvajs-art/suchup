@@ -9,13 +9,32 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/admin.css" />
-  <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+  <link rel="icon" href="assets/korva-logo.gif" type="image/gif" />
 </head>
 <body>
-  <div class="app admin-app">
+  <div class="admin-gate" id="adminGate">
+    <form class="admin-gate__card" id="adminGateForm">
+      <img class="admin-gate__logo" src="assets/korva-logo.gif" alt="대한민국재향군인회" width="180" height="48" />
+      <h1>관리자 인증</h1>
+      <p>관리 화면은 암호 확인 후 이용할 수 있습니다.</p>
+      <label class="field">
+        <span>아이디</span>
+        <input type="text" id="gateUsername" autocomplete="username" required />
+      </label>
+      <label class="field">
+        <span>비밀번호</span>
+        <input type="password" id="gatePassword" autocomplete="current-password" required />
+      </label>
+      <p class="form-error" id="gateError" hidden></p>
+      <button type="submit" class="primary-btn" id="gateBtn">관리자 입장</button>
+      <a class="ghost-btn admin-gate__back" href="index.html">수첩으로 돌아가기</a>
+    </form>
+  </div>
+
+  <div class="app admin-app" id="adminApp" hidden>
     <header class="header">
       <div class="brand">
-        <img class="brand__logo" src="assets/logo.svg" alt="" width="40" height="40" />
+        <img class="brand__logo" src="assets/korva-logo.gif" alt="" width="40" height="40" />
         <div class="brand__text">
           <span class="brand__name">수첩 관리</span>
           <span class="brand__sub" id="adminUser">Admin</span>
@@ -55,7 +74,7 @@
         </div>
       </section>
 
-      <p class="status-msg" id="adminLoading">불러오는 중...</p>
+      <p class="status-msg" id="adminLoading" hidden>불러오는 중...</p>
       <p class="status-msg status-msg--error" id="adminError" hidden></p>
 
       <div class="admin-table-wrap" id="adminTableWrap" hidden>

@@ -10,14 +10,14 @@
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
 </head>
-<body>
+<body class="notebook-page">
   <div class="app">
     <header class="header">
       <div class="brand">
-        <img class="brand__logo" src="assets/logo.svg" alt="" width="40" height="40" />
+        <img class="brand__logo" src="assets/korva-logo.gif" alt="" width="40" height="40" />
         <div class="brand__text">
           <span class="brand__name">수첩</span>
-          <span class="brand__sub">Contact Notebook</span>
+          <span class="brand__sub">대한민국재향군인회</span>
         </div>
       </div>
       <button type="button" class="menu-btn" id="menuBtn" aria-label="메뉴 열기" aria-expanded="false" aria-controls="drawer">
@@ -38,7 +38,7 @@
     </aside>
 
     <main class="main">
-      <section class="search-card" aria-label="검색 및 필터">
+      <section class="search-card search-card--sticky" aria-label="검색 및 필터">
         <div class="search-bar">
           <input
             type="search"
@@ -80,14 +80,16 @@
         </div>
       </section>
 
-      <p class="status-msg" id="loadingState" hidden>연락처를 불러오는 중...</p>
-      <div class="status-msg status-msg--error" id="errorState" hidden>
-        <p>연락처를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>
-        <button type="button" class="retry-btn" id="retryBtn">다시 시도</button>
+      <div class="list-scroll">
+        <p class="status-msg" id="loadingState" hidden>연락처를 불러오는 중...</p>
+        <div class="status-msg status-msg--error" id="errorState" hidden>
+          <p>연락처를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>
+          <button type="button" class="retry-btn" id="retryBtn">다시 시도</button>
+        </div>
+        <p class="result-count" id="resultCount" aria-live="polite" hidden></p>
+        <section class="contact-list" id="contactList" aria-label="연락처 목록" hidden></section>
+        <p class="empty-state" id="emptyState" hidden>검색 결과가 없습니다.</p>
       </div>
-      <p class="result-count" id="resultCount" aria-live="polite" hidden></p>
-      <section class="contact-list" id="contactList" aria-label="연락처 목록" hidden></section>
-      <p class="empty-state" id="emptyState" hidden>검색 결과가 없습니다.</p>
     </main>
   </div>
 

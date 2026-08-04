@@ -32,6 +32,13 @@
     excelImportBtn: document.getElementById("excelImportBtn"),
     excelTemplateBtn: document.getElementById("excelTemplateBtn"),
     excelMsg: document.getElementById("excelMsg"),
+    gate: document.getElementById("adminGate"),
+    app: document.getElementById("adminApp"),
+    gateForm: document.getElementById("adminGateForm"),
+    gateUser: document.getElementById("gateUsername"),
+    gatePass: document.getElementById("gatePassword"),
+    gateError: document.getElementById("gateError"),
+    gateBtn: document.getElementById("gateBtn"),
   };
 
   let contacts = [];
@@ -47,6 +54,11 @@
   function showFormError(msg) {
     els.formError.hidden = !msg;
     els.formError.textContent = msg || "";
+  }
+
+  function showGateError(msg) {
+    els.gateError.hidden = !msg;
+    els.gateError.textContent = msg || "";
   }
 
   function showExcelMsg(msg, isError) {
@@ -161,15 +173,44 @@
     };
   }
 
-  async function ensureAuth() {
-    const me = await SuchupAuth.me();
-    if (!me.authenticated) {
-      location.replace("login.html?next=admin");
-      return false;
-    }
-    els.user.textContent = me.admin?.username || "Admin";
-    return true;
+  async function unlockAdmin(username) {
+    els.gate.hidden = true;
+    els.app.hidden = false;
+    els.user.textContent = username || "Admin";
+    await loadContacts();
   }
+
+  async function boot() {
+    try {
+      const me = await SuchupAuth.me();
+      if (me.authenticated && me.admin?.username) {
+        els.gateUser.value = me.admin.username;
+      }
+    } catch (_) {
+      /* ignore */
+    }
+
+    els.gate.hidden = false;
+    els.app.hidden = true;
+    (els.gateUser.value ? els.gatePass : els.gateUser).focus();
+  }
+
+  els.gateForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    showGateError("");
+    els.gateBtn.disabled = true;
+    try {
+      const username = els.gateUser.value.trim();
+      const password = els.gatePass.value;
+      const result = await SuchupAuth.login(username, password);
+      els.gatePass.value = "";
+      await unlockAdmin(result.admin?.username || username);
+    } catch (err) {
+      showGateError(err.message || "\uC554\uD638\uAC00 \uC62C\uBC14\uB974\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.");
+    } finally {
+      els.gateBtn.disabled = false;
+    }
+  });
 
   els.addBtn.addEventListener("click", () => openModal(null));
   els.logoutBtn.addEventListener("click", async () => {
@@ -267,7 +308,5 @@
     if (e.key === "Escape" && !els.modal.hidden) closeModal();
   });
 
-  ensureAuth().then((ok) => {
-    if (ok) loadContacts();
-  });
+  boot();
 })();
