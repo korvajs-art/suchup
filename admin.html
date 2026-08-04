@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>관리자 | 수첩</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+</head>
+<body>
+  <div class="app admin-app">
+    <header class="header">
+      <div class="brand">
+        <img class="brand__logo" src="assets/logo.svg" alt="" width="40" height="40" />
+        <div class="brand__text">
+          <span class="brand__name">수첩 관리</span>
+          <span class="brand__sub" id="adminUser">Admin</span>
+        </div>
+      </div>
+      <div class="admin-header-actions">
+        <a class="ghost-btn" href="index.html">수첩 보기</a>
+        <button type="button" class="ghost-btn" id="logoutBtn">로그아웃</button>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="admin-toolbar">
+        <div>
+          <h1>연락처 관리</h1>
+          <p id="adminCount">0명</p>
+        </div>
+        <button type="button" class="primary-btn" id="addBtn">+ 연락처 추가</button>
+      </section>
+
+      <section class="auth-card" style="margin-bottom:16px">
+        <h2>엑셀로 일괄 등록/수정</h2>
+        <p class="auth-lead" style="margin-bottom:12px">
+          열: 소속, 성명, 직책, 연락처, 선임일, 생년월일, 군별, 계급, 임관/기수, 임관구분, 기수, 주소, 비고<br />
+          연락처(전화)가 같으면 수정, 없으면 추가합니다. 순번 열은 있어도 무시합니다.
+        </p>
+        <div class="modal__actions" style="justify-content:flex-start; gap:10px; flex-wrap:wrap">
+          <button type="button" class="ghost-btn" id="excelTemplateBtn">양식 다운로드</button>
+        </div>
+        <div style="margin-top:14px">
+          <label class="field">
+            <span>엑셀 파일 (.xlsx)</span>
+            <input type="file" id="excelFile" accept=".xlsx,.xls" />
+          </label>
+          <button class="primary-btn" type="button" id="excelImportBtn" style="width:auto;margin-top:10px">엑셀 반영</button>
+          <p class="status-msg" id="excelMsg" hidden style="margin-top:10px"></p>
+        </div>
+      </section>
+
+      <p class="status-msg" id="adminLoading">불러오는 중...</p>
+      <p class="status-msg status-msg--error" id="adminError" hidden></p>
+
+      <div class="admin-table-wrap" id="adminTableWrap" hidden>
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>성명</th>
+              <th>소속</th>
+              <th>직책</th>
+              <th>연락처</th>
+              <th>군별</th>
+              <th>계급</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="adminTableBody"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal" id="contactModal" hidden>
+    <div class="modal__backdrop" data-close></div>
+    <form class="modal__card" id="contactForm">
+      <h2 id="modalTitle">연락처 추가</h2>
+      <input type="hidden" id="contactId" />
+
+      <div class="modal__grid">
+        <label class="field"><span>성명 *</span><input id="fName" required /></label>
+        <label class="field"><span>연락처</span><input id="fPhone" /></label>
+        <label class="field"><span>소속</span><input id="fDept" /></label>
+        <label class="field"><span>직책</span><input id="fPosition" /></label>
+        <label class="field"><span>지역</span><input id="fRegion" /></label>
+        <label class="field"><span>선임일</span><input id="fAppointDate" /></label>
+        <label class="field"><span>생년월일</span><input id="fBirthDate" /></label>
+        <label class="field"><span>군별</span><input id="fMilitaryBranch" /></label>
+        <label class="field"><span>계급</span><input id="fMilitaryRank" /></label>
+        <label class="field"><span>임관/기수</span><input id="fCommission" /></label>
+        <label class="field"><span>임관구분</span><input id="fCommissionType" /></label>
+        <label class="field"><span>기수</span><input id="fClassNo" /></label>
+        <label class="field"><span>이메일</span><input id="fEmail" type="email" /></label>
+        <label class="field field--full"><span>주소</span><input id="fAddress" /></label>
+        <label class="field field--full"><span>비고</span><input id="fRemark" /></label>
+      </div>
+
+      <p class="form-error" id="formError" hidden></p>
+      <div class="modal__actions">
+        <button type="button" class="ghost-btn" data-close>취소</button>
+        <button type="submit" class="primary-btn" id="saveBtn">저장</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <script src="js/auth.js" charset="utf-8"></script>
+  <script src="js/excel.js" charset="utf-8"></script>
+  <script src="js/admin.js" charset="utf-8"></script>
+</body>
+</html>

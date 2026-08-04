@@ -1,0 +1,13 @@
+.wrangler/
+.dev.vars
+node_modules/
+.DS_Store
+*.log
+egov-suchup/
+.tools/
+data/
+*.db
+*.mv.db
+*.trace.db
+.idea/
+.vscode/

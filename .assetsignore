@@ -1,0 +1,13 @@
+# Cloudflare Pages asset upload ignore (also used when git is absent)
+.wrangler/
+.dev.vars
+node_modules/
+.git/
+egov-suchup/
+.tools/
+*.log
+.DS_Store
+data/
+*.db
+*.mv.db
+*.trace.db

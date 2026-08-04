@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>수첩</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="brand">
+        <img class="brand__logo" src="assets/logo.svg" alt="" width="40" height="40" />
+        <div class="brand__text">
+          <span class="brand__name">수첩</span>
+          <span class="brand__sub">Contact Notebook</span>
+        </div>
+      </div>
+      <button type="button" class="menu-btn" id="menuBtn" aria-label="메뉴 열기" aria-expanded="false" aria-controls="drawer">
+        <span class="menu-btn__bar"></span>
+        <span class="menu-btn__bar"></span>
+        <span class="menu-btn__bar"></span>
+      </button>
+    </header>
+
+    <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
+    <aside class="drawer" id="drawer" aria-hidden="true">
+      <p class="drawer__title">메뉴</p>
+      <nav class="drawer__nav">
+        <a href="index.html" class="drawer__link is-active">연락처</a>
+        <a href="admin.html" class="drawer__link">관리자</a>
+        <button type="button" class="drawer__link drawer__link--btn" id="logoutBtn">로그아웃</button>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <section class="search-card" aria-label="검색 및 필터">
+        <div class="search-bar">
+          <input
+            type="search"
+            id="searchInput"
+            class="search-bar__input"
+            placeholder="통합 검색"
+            autocomplete="off"
+            enterkeyhint="search"
+          />
+          <span class="search-bar__icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="7" />
+              <path d="M20 20l-3.5-3.5" />
+            </svg>
+          </span>
+        </div>
+        <div class="filters">
+          <label class="filter">
+            <span class="visually-hidden">지역</span>
+            <select id="regionFilter" class="filter__select">
+              <option value="">지역</option>
+            </select>
+            <span class="filter__chevron" aria-hidden="true"></span>
+          </label>
+          <label class="filter">
+            <span class="visually-hidden">회/부서</span>
+            <select id="deptFilter" class="filter__select">
+              <option value="">회/부서검색</option>
+            </select>
+            <span class="filter__chevron" aria-hidden="true"></span>
+          </label>
+          <label class="filter">
+            <span class="visually-hidden">직위</span>
+            <select id="positionFilter" class="filter__select">
+              <option value="">직위검색</option>
+            </select>
+            <span class="filter__chevron" aria-hidden="true"></span>
+          </label>
+        </div>
+      </section>
+
+      <p class="status-msg" id="loadingState" hidden>연락처를 불러오는 중...</p>
+      <div class="status-msg status-msg--error" id="errorState" hidden>
+        <p>연락처를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>
+        <button type="button" class="retry-btn" id="retryBtn">다시 시도</button>
+      </div>
+      <p class="result-count" id="resultCount" aria-live="polite" hidden></p>
+      <section class="contact-list" id="contactList" aria-label="연락처 목록" hidden></section>
+      <p class="empty-state" id="emptyState" hidden>검색 결과가 없습니다.</p>
+    </main>
+  </div>
+
+  <script src="js/auth.js" charset="utf-8"></script>
+  <script src="js/app.js" charset="utf-8"></script>
+</body>
+</html>

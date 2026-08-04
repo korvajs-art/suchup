@@ -1,0 +1,14 @@
+{
+  "name": "suchup",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler pages dev . --ip 127.0.0.1 --port 8788 --persist-to .wrangler/state",
+    "db:schema:local": "wrangler d1 execute suchup --file=schema.sql --local --persist-to .wrangler/state",
+    "db:seed:local": "wrangler d1 execute suchup --file=seed.sql --local --persist-to .wrangler/state",
+    "db:schema:remote": "wrangler d1 execute suchup --file=schema.sql --remote",
+    "db:seed:remote": "wrangler d1 execute suchup --file=seed.sql --remote"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
