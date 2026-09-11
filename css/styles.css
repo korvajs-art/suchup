@@ -12,8 +12,8 @@ body {
   margin: 0;
   min-height: 100dvh;
   font-family: var(--font);
-  font-size: 15px;
-  line-height: 1.5;
+  font-size: 17px;
+  line-height: 1.55;
   color: var(--text);
   background: var(--bg-grad);
   background-color: var(--bg);
@@ -154,8 +154,8 @@ body.notebook-page .main {
 .icon-btn {
   display: grid;
   place-items: center;
-  width: 42px;
-  height: 42px;
+  width: var(--touch);
+  height: var(--touch);
   border: 0;
   border-radius: var(--r-md);
   background: transparent;
@@ -190,10 +190,10 @@ body.notebook-page .main {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 5px;
-  width: 42px;
-  height: 42px;
-  padding: 11px;
+  gap: 6px;
+  width: var(--touch);
+  height: var(--touch);
+  padding: 14px;
   border: 0;
   border-radius: var(--r-md);
   background: transparent;
@@ -306,12 +306,13 @@ body.notebook-page .main {
 .drawer__link {
   display: block;
   width: 100%;
-  min-height: 46px;
+  min-height: var(--touch);
   padding: var(--sp-3) var(--sp-4);
   border: 0;
   border-radius: var(--r-md);
   background: transparent;
-  font-weight: 500;
+  font-size: var(--fs-md);
+  font-weight: 600;
   text-align: left;
   cursor: pointer;
   transition: background 0.2s var(--ease), color 0.2s var(--ease);
@@ -384,9 +385,9 @@ body.notebook-page .main {
   gap: var(--sp-2);
   flex: 1;
   min-width: 0;
-  height: 44px;
+  height: var(--touch);
   padding: 0 var(--sp-3) 0 var(--sp-4);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-strong);
   border-radius: var(--r-md);
   background: var(--surface);
   box-shadow: none;
@@ -447,15 +448,20 @@ body.notebook-page .main {
 
 .filter-btn {
   position: relative;
-  display: grid;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
   flex-shrink: 0;
-  width: 44px;
-  height: 44px;
-  border: 1px solid var(--border);
+  width: 64px;
+  height: var(--touch);
+  border: 1px solid var(--border-strong);
   border-radius: var(--r-md);
   background: var(--surface);
-  color: var(--text-muted);
+  color: var(--text);
+  font-size: var(--fs-2xs);
+  font-weight: 700;
   box-shadow: none;
   cursor: pointer;
   transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s var(--ease);
@@ -476,15 +482,15 @@ body.notebook-page .main {
 
 .filter-btn__badge {
   position: absolute;
-  top: 4px;
-  right: 4px;
+  top: 2px;
+  right: 2px;
   min-width: 18px;
   height: 18px;
   padding: 0 5px;
   border-radius: var(--r-full);
   background: var(--brand);
   color: var(--brand-fg);
-  font-size: var(--fs-2xs);
+  font-size: 0.7rem;
   font-weight: 700;
   line-height: 18px;
 }
@@ -511,15 +517,15 @@ body.notebook-page .main {
 
 .chip {
   flex-shrink: 0;
-  min-height: 36px;
+  min-height: 44px;
   padding: 0 var(--sp-3);
   border: 0;
-  border-bottom: 2px solid transparent;
+  border-bottom: 3px solid transparent;
   border-radius: 0;
   background: transparent;
   color: var(--text-muted);
   font-size: var(--fs-sm);
-  font-weight: 600;
+  font-weight: 700;
   white-space: nowrap;
   cursor: pointer;
   transition: color 0.18s var(--ease), border-color 0.18s var(--ease);
@@ -632,6 +638,7 @@ body.notebook-page .main {
   gap: var(--sp-3);
   flex: 1;
   min-width: 0;
+  min-height: 72px;
   padding: var(--sp-3) var(--sp-2) var(--sp-3) var(--sp-3);
   border: 0;
   background: transparent;
@@ -650,12 +657,12 @@ body.notebook-page .main {
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--r-full);
   background: var(--brand-soft);
   color: var(--brand-soft-fg);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-md);
   font-weight: 700;
   letter-spacing: -0.02em;
 }
@@ -686,7 +693,7 @@ body.notebook-page .main {
 }
 
 .row__name {
-  font-size: var(--fs-md);
+  font-size: var(--fs-lg);
   font-weight: 700;
   letter-spacing: -0.02em;
   white-space: nowrap;
@@ -695,7 +702,7 @@ body.notebook-page .main {
 .row__role {
   flex: 1;
   min-width: 0;
-  font-size: var(--fs-xs);
+  font-size: var(--fs-sm);
   font-weight: 600;
   color: var(--text);
   white-space: nowrap;
@@ -725,12 +732,11 @@ body.notebook-page .main {
 }
 
 .row__phone {
-  flex-shrink: 0;
-  margin-left: var(--sp-2);
-  font-size: var(--fs-xs);
-  color: var(--text-muted);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--brand-soft-fg);
   font-variant-numeric: tabular-nums;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
   white-space: nowrap;
 }
 
@@ -751,33 +757,44 @@ body.notebook-page .main {
 
 /* 전화는 가장 자주 쓰는 동작이라 목록에서 바로 누를 수 있게 둔다. */
 .row__call {
-  display: grid;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
   flex-shrink: 0;
-  width: 52px;
+  width: 64px;
+  min-height: 72px;
   border-left: 1px solid var(--border);
-  color: var(--brand);
+  background: var(--brand-soft);
+  color: var(--brand-soft-fg);
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+  text-decoration: none;
   transition: background 0.2s ease;
 }
 
 .row__call svg {
-  width: 19px;
-  height: 19px;
+  width: 22px;
+  height: 22px;
 }
 
 .row__call:hover,
 .row__call:focus-visible {
-  background: var(--brand-soft);
+  background: var(--brand);
+  color: var(--brand-fg);
   outline: none;
 }
 
 .row__call:active {
-  background: var(--brand-soft);
+  background: var(--brand);
+  color: var(--brand-fg);
 }
 
 /* 번호가 없는 줄도 오른쪽 끝을 맞추려고 같은 폭을 비워 둔다. */
 .row__call--off {
   pointer-events: none;
+  background: transparent;
 }
 
 /* 공석은 사람이 아니므로 눌러도 아무 일이 없어야 한다. */
@@ -1055,16 +1072,16 @@ body.notebook-page .main {
 
 .sheet__select {
   width: 100%;
-  height: 46px;
+  height: var(--touch);
   padding: 0 var(--sp-8) 0 var(--sp-3);
   appearance: none;
   -webkit-appearance: none;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-strong);
   border-radius: var(--r-md);
   background: var(--surface);
   background-image: linear-gradient(45deg, transparent 50%, var(--text-soft) 50%),
     linear-gradient(135deg, var(--text-soft) 50%, transparent 50%);
-  background-position: calc(100% - 20px) 21px, calc(100% - 14px) 21px;
+  background-position: calc(100% - 20px) 24px, calc(100% - 14px) 24px;
   background-size: 6px 6px;
   background-repeat: no-repeat;
   font-size: var(--fs-md);
@@ -1315,10 +1332,11 @@ body.notebook-page .main {
 
 .primary-btn {
   width: 100%;
-  min-height: 46px;
+  min-height: var(--touch);
   padding: var(--sp-3) var(--sp-4);
   background: var(--brand);
   color: var(--brand-fg);
+  font-size: var(--fs-md);
 }
 
 .primary-btn:hover {
@@ -1538,6 +1556,52 @@ body.notebook-page .main {
 
 .toast[hidden] {
   display: none !important;
+}
+
+/* 홈 화면 설치 안내 — 나이가 드신 분도 따라 할 수 있게 문구를 크게 */
+.install-banner {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--sp-4) + var(--safe-b));
+  z-index: 70;
+  transform: translateX(-50%);
+  width: min(calc(100vw - 24px), 520px);
+  padding: var(--sp-4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-3);
+  animation: riseIn 0.35s var(--ease) both;
+}
+
+.install-banner[hidden] {
+  display: none !important;
+}
+
+.install-banner__title {
+  margin: 0 0 var(--sp-1);
+  font-size: var(--fs-lg);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.install-banner__lead {
+  margin: 0 0 var(--sp-4);
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.install-banner__actions {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: var(--sp-2);
+}
+
+.install-banner__actions .primary-btn,
+.install-banner__actions .ghost-btn {
+  min-height: var(--touch);
+  font-size: var(--fs-md);
 }
 
 /* ── 모션 ────────────────────────────────────────────── */

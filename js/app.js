@@ -157,14 +157,15 @@
     // 어느 시·구 회장인지 한눈에 보이도록 시군구와 직위를 한 줄로 묶는다.
     const placeRole = [contact.dept, contact.position].filter(Boolean).join(" · ");
 
-    const line2 = vacant
-      ? `<span class="row__role">${escapeHtml(placeRole || VACANT)}</span><span class="row__vacant-tag">${VACANT}</span>`
+    const phoneLine = vacant
+      ? `<span class="row__vacant-tag">${VACANT}</span>`
       : digits
-        ? `<span class="row__role">${escapeHtml(placeRole)}</span><span class="row__phone">${escapeHtml(contact.phone)}</span>`
-        : `<span class="row__role">${escapeHtml(placeRole)}</span><span class="row__phone row__phone--none">번호 없음</span>`;
+        ? `<span class="row__phone">${escapeHtml(contact.phone)}</span>`
+        : `<span class="row__phone row__phone--none">번호 없음</span>`;
 
+    // 아이콘만 두지 않고 「전화」 글자를 붙여 나이가 드신 분도 바로 누를 수 있게 한다.
     const call = digits
-      ? `<a class="row__call" href="tel:${digits}" aria-label="${escapeHtml(contact.name)} 전화걸기">${ICON.phone}</a>`
+      ? `<a class="row__call" href="tel:${digits}" aria-label="${escapeHtml(contact.name)} 전화걸기">${ICON.phone}<span>전화</span></a>`
       : `<span class="row__call row__call--off" aria-hidden="true"></span>`;
 
     return `<li class="row${vacant ? " row--vacant" : ""}${open ? " is-open" : ""}" data-id="${escapeHtml(contact.id)}">
@@ -173,7 +174,8 @@
           <span class="row__avatar" data-tone="${toneOf(contact.region)}" aria-hidden="true">${escapeHtml(initial)}</span>
           <span class="row__body">
             <span class="row__line"><span class="row__name">${escapeHtml(contact.name)}</span></span>
-            <span class="row__line">${line2}</span>
+            <span class="row__line"><span class="row__role">${escapeHtml(placeRole || (vacant ? VACANT : ""))}</span></span>
+            <span class="row__line">${phoneLine}</span>
           </span>
           <span class="row__caret" aria-hidden="true">${ICON.caret}</span>
         </button>

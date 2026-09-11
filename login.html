@@ -2,7 +2,10 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a4a7a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="수첩" />
   <title>수첩 로그인</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -10,7 +13,9 @@
   <link rel="stylesheet" href="css/tokens.css" />
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/admin.css" />
-  <link rel="icon" href="assets/korva-logo.gif" type="image/gif" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
 </head>
 <body class="auth-body">
   <div class="auth-scene" aria-hidden="true">
@@ -81,5 +86,6 @@
 
   <script src="js/auth.js" charset="utf-8"></script>
   <script src="js/login.js" charset="utf-8"></script>
+  <script src="js/pwa.js" charset="utf-8"></script>
 </body>
 </html>

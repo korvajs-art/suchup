@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a4a7a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="수첩" />
   <title>관리자 | 수첩</title>
   <script>
     (() => {
@@ -17,7 +20,9 @@
   <link rel="stylesheet" href="css/tokens.css" />
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/admin.css" />
-  <link rel="icon" href="assets/korva-logo.gif" type="image/gif" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
 </head>
 <body>
   <div class="app admin-app" id="adminApp">
@@ -140,5 +145,6 @@
   <script src="js/org.js" charset="utf-8"></script>
   <script src="js/excel.js" charset="utf-8"></script>
   <script src="js/admin.js" charset="utf-8"></script>
+  <script src="js/pwa.js" charset="utf-8"></script>
 </body>
 </html>

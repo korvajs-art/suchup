@@ -32,7 +32,7 @@
   --green-600: #067647;
   --amber-500: #b54708;
 
-  /* 여백 */
+  /* 여백 — 손가락으로 누르기 쉽게 넉넉히 */
   --sp-1: 4px;
   --sp-2: 8px;
   --sp-3: 12px;
@@ -41,15 +41,18 @@
   --sp-6: 24px;
   --sp-8: 32px;
 
-  /* 글자 */
+  /* 글자 — 50대 후반이 기본으로 읽기 쉽게 한 단계 키움 */
   --font: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-  --fs-2xs: 0.69rem;
-  --fs-xs: 0.75rem;
-  --fs-sm: 0.82rem;
-  --fs-md: 0.92rem;
-  --fs-base: 1rem;
-  --fs-lg: 1.12rem;
-  --fs-xl: 1.3rem;
+  --fs-2xs: 0.8rem;
+  --fs-xs: 0.9rem;
+  --fs-sm: 0.98rem;
+  --fs-md: 1.08rem;
+  --fs-base: 1.16rem;
+  --fs-lg: 1.28rem;
+  --fs-xl: 1.45rem;
+
+  /* 손가락 최소 크기 */
+  --touch: 52px;
 
   /* 모서리 */
   --r-sm: 8px;
@@ -82,9 +85,9 @@
   --border-strong: var(--slate-300);
   --hairline: rgba(42, 95, 158, 0.1);
 
-  --text: #152033;
-  --text-muted: var(--slate-500);
-  --text-soft: var(--slate-400);
+  --text: #0f1a2a;
+  --text-muted: #3d4a5c;
+  --text-soft: #5a687c;
 
   --brand: var(--navy-600);
   --brand-hover: var(--navy-700);
@@ -129,9 +132,9 @@
   --border-strong: #36445f;
   --hairline: rgba(143, 176, 214, 0.14);
 
-  --text: #e9eef6;
-  --text-muted: #97a4ba;
-  --text-soft: #6d7b92;
+  --text: #f2f5fa;
+  --text-muted: #c2cddc;
+  --text-soft: #9aabbf;
 
   --brand: #6f9fd8;
   --brand-hover: #89b3e4;
