@@ -70,7 +70,8 @@
     phone: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.4 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.9.6 2.8.7A2 2 0 0 1 22 16.9z"/></svg>`,
     sms: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.5 9.5 9.5 0 0 1-3-.5L3 21l1.5-4a8.4 8.4 0 0 1-.5-3 8.4 8.4 0 0 1 9-8.5 8.4 8.4 0 0 1 8 6z"/></svg>`,
     card: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="11" r="2.2"/><path d="M5.8 17a3.4 3.4 0 0 1 6.4 0M15 9h4M15 13h4"/></svg>`,
-    caret: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>`,
+    info: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 19.2a6.5 6.5 0 0 1 13 0"/><circle cx="12" cy="12" r="9.2"/></svg>`,
+    more: `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>`,
   };
 
   /* ── 필터 ───────────────────────────────────────────── */
@@ -154,33 +155,43 @@
     const initial = vacant ? "—" : String(contact.name || "?").trim().charAt(0);
     const open = openIds.has(String(contact.id));
 
-    // 어느 시·구 회장인지 한눈에 보이도록 시군구와 직위를 한 줄로 묶는다.
+    // 모바일노트 회원목록처럼 직위·소속을 이름 아래로 두고, 바로가기는 원형 아이콘으로 둔다.
     const placeRole = [contact.dept, contact.position].filter(Boolean).join(" · ");
-
-    const phoneLine = vacant
-      ? `<span class="row__vacant-tag">${VACANT}</span>`
+    const orgLine = vacant
+      ? ""
       : digits
-        ? `<span class="row__phone">${escapeHtml(contact.phone)}</span>`
-        : `<span class="row__phone row__phone--none">번호 없음</span>`;
+        ? contact.phone
+        : contact.region || "번호 없음";
 
-    // 아이콘만 두지 않고 「전화」 글자를 붙여 나이가 드신 분도 바로 누를 수 있게 한다.
-    const call = digits
-      ? `<a class="row__call" href="tel:${digits}" aria-label="${escapeHtml(contact.name)} 전화걸기">${ICON.phone}<span>전화</span></a>`
-      : `<span class="row__call row__call--off" aria-hidden="true"></span>`;
+    const quick = vacant
+      ? ""
+      : `<div class="row__quick" role="group" aria-label="바로가기">
+          ${
+            digits
+              ? `<a class="quick-btn" href="tel:${digits}" aria-label="${escapeHtml(contact.name)} 전화">${ICON.phone}</a>
+                 <a class="quick-btn" href="sms:${digits}" aria-label="${escapeHtml(contact.name)} 문자">${ICON.sms}</a>`
+              : `<span class="quick-btn quick-btn--off" aria-hidden="true">${ICON.phone}</span>
+                 <span class="quick-btn quick-btn--off" aria-hidden="true">${ICON.sms}</span>`
+          }
+          <button type="button" class="quick-btn" data-toggle aria-label="상세 정보" aria-expanded="${open}">${ICON.info}</button>
+          <button type="button" class="quick-btn" data-save aria-label="연락처 저장">${ICON.card}</button>
+        </div>`;
 
     return `<li class="row${vacant ? " row--vacant" : ""}${open ? " is-open" : ""}" data-id="${escapeHtml(contact.id)}">
-      <div class="row__top">
-        <button type="button" class="row__main" aria-expanded="${open}">
-          <span class="row__avatar" data-tone="${toneOf(contact.region)}" aria-hidden="true">${escapeHtml(initial)}</span>
-          <span class="row__body">
-            <span class="row__line"><span class="row__name">${escapeHtml(contact.name)}</span></span>
-            <span class="row__line"><span class="row__role">${escapeHtml(placeRole || (vacant ? VACANT : ""))}</span></span>
-            <span class="row__line">${phoneLine}</span>
-          </span>
-          <span class="row__caret" aria-hidden="true">${ICON.caret}</span>
-        </button>
-        ${call}
-      </div>
+      <article class="row__card">
+        <button type="button" class="row__more" data-toggle aria-label="더보기" aria-expanded="${open}">${ICON.more}</button>
+        <div class="row__layout">
+          <button type="button" class="row__hit" data-toggle aria-expanded="${open}">
+            <span class="row__avatar" data-tone="${toneOf(contact.region)}" aria-hidden="true">${escapeHtml(initial)}</span>
+            <span class="row__body">
+              <span class="row__name">${escapeHtml(contact.name)}</span>
+              <span class="row__role">${escapeHtml(placeRole || (vacant ? VACANT : "—"))}</span>
+              ${orgLine ? `<span class="row__org">${escapeHtml(orgLine)}</span>` : ""}
+            </span>
+          </button>
+          ${quick}
+        </div>
+      </article>
       <div class="row__panel"${open ? "" : " hidden"}></div>
     </li>`;
   }
@@ -212,9 +223,9 @@
     const digits = phoneDigits(contact.phone);
     const actions = digits
       ? `<div class="row__actions">
-          <a class="row-action" href="tel:${digits}">${ICON.phone}전화</a>
-          <a class="row-action" href="sms:${digits}">${ICON.sms}문자</a>
-          <button type="button" class="row-action" data-save>${ICON.card}저장</button>
+          <a class="row-action" href="tel:${digits}">${ICON.phone}<span>전화</span></a>
+          <a class="row-action" href="sms:${digits}">${ICON.sms}<span>문자</span></a>
+          <button type="button" class="row-action" data-save>${ICON.card}<span>저장</span></button>
         </div>`
       : "";
 
@@ -311,7 +322,9 @@
       openIds.delete(String(id));
     }
     li.classList.toggle("is-open", opening);
-    li.querySelector(".row__main").setAttribute("aria-expanded", String(opening));
+    li.querySelectorAll("[aria-expanded]").forEach((el) => {
+      el.setAttribute("aria-expanded", String(opening));
+    });
   }
 
   function buildVCard(contact) {
@@ -524,8 +537,8 @@
         return;
       }
 
-      if (e.target.closest(".row__call") || e.target.closest(".row-action")) return;
-      if (e.target.closest(".row__main")) toggleRow(li);
+      if (e.target.closest("a[href^='tel:'], a[href^='sms:'], [data-save]")) return;
+      if (e.target.closest("[data-toggle], .row__hit, .row__more")) toggleRow(li);
     });
 
     els.contactList.addEventListener("submit", async (e) => {

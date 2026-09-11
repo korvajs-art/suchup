@@ -606,63 +606,94 @@ body.notebook-page .main {
 .rows {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 10px;
   margin: 0;
-  padding: 0;
+  padding: 2px 0 12px;
   list-style: none;
-  border: 1px solid var(--border);
-  border-radius: var(--r-md);
-  background: var(--surface);
-  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  overflow: visible;
   box-shadow: none;
 }
 
 .row {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  transition: background 0.2s ease;
-}
-
-.row:last-child {
+  background: transparent;
   border-bottom: 0;
 }
 
-.row__top {
-  display: flex;
-  align-items: stretch;
+.row__card {
+  position: relative;
+  padding: 14px 14px 12px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow-1);
 }
 
-.row__main {
+.row.is-open .row__card {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-color: transparent;
+  box-shadow: none;
+}
+
+.row__more {
+  position: absolute;
+  top: 6px;
+  right: 4px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: var(--r-full);
+  background: transparent;
+  color: var(--text-soft);
+  cursor: pointer;
+}
+
+.row__more svg {
+  width: 18px;
+  height: 18px;
+}
+
+.row__layout {
   display: flex;
-  align-items: center;
-  gap: var(--sp-3);
-  flex: 1;
+  flex-direction: column;
+  gap: 10px;
+  padding-right: 28px;
+}
+
+.row__hit {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  width: 100%;
   min-width: 0;
-  min-height: 72px;
-  padding: var(--sp-3) var(--sp-2) var(--sp-3) var(--sp-3);
+  padding: 0;
   border: 0;
   background: transparent;
   text-align: left;
   cursor: pointer;
-  transition: background 0.2s ease;
 }
 
-.row__main:hover,
-.row__main:focus-visible {
-  background: var(--surface-2);
-  outline: none;
+.row__hit:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 3px;
+  border-radius: 10px;
 }
 
 .row__avatar {
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  width: 44px;
-  height: 44px;
+  width: 56px;
+  height: 56px;
   border-radius: var(--r-full);
   background: var(--brand-soft);
   color: var(--brand-soft-fg);
-  font-size: var(--fs-md);
+  font-size: var(--fs-lg);
   font-weight: 700;
   letter-spacing: -0.02em;
 }
@@ -680,121 +711,92 @@ body.notebook-page .main {
 .row__body {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
   flex: 1;
   min-width: 0;
-}
-
-.row__line {
-  display: flex;
-  align-items: baseline;
-  gap: var(--sp-2);
-  min-width: 0;
+  padding-top: 2px;
 }
 
 .row__name {
-  font-size: var(--fs-lg);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  white-space: nowrap;
-}
-
-.row__role {
-  flex: 1;
-  min-width: 0;
-  font-size: var(--fs-sm);
-  font-weight: 600;
+  font-size: var(--fs-xl);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.25;
   color: var(--text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.row__pos {
-  flex: 1;
-  min-width: 0;
-  font-size: var(--fs-xs);
-  font-weight: 500;
+.row__role {
+  font-size: var(--fs-sm);
+  font-weight: 600;
   color: var(--text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.row__dept {
-  flex-shrink: 0;
-  max-width: 45%;
+.row__org {
   font-size: var(--fs-xs);
+  font-weight: 500;
   color: var(--text-soft);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.row__phone {
-  font-size: var(--fs-md);
-  font-weight: 600;
-  color: var(--brand-soft-fg);
   font-variant-numeric: tabular-nums;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
 }
 
-.row__phone--none {
-  color: var(--text-soft);
-  font-style: italic;
-}
-
-.row__caret {
-  flex-shrink: 0;
-  color: var(--text-soft);
-  transition: transform 0.28s var(--ease);
-}
-
-.row.is-open .row__caret {
-  transform: rotate(180deg);
-}
-
-/* 전화는 가장 자주 쓰는 동작이라 목록에서 바로 누를 수 있게 둔다. */
-.row__call {
+.row__quick {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 2px;
-  flex-shrink: 0;
-  width: 64px;
-  min-height: 72px;
-  border-left: 1px solid var(--border);
-  background: var(--brand-soft);
-  color: var(--brand-soft-fg);
-  font-size: var(--fs-2xs);
-  font-weight: 700;
+  gap: 10px;
+  padding-left: 70px;
+}
+
+.quick-btn {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: var(--r-full);
+  background: #2f3540;
+  color: #fff;
   text-decoration: none;
-  transition: background 0.2s ease;
+  cursor: pointer;
+  transition: transform 0.15s var(--ease), background 0.15s ease, opacity 0.15s ease;
 }
 
-.row__call svg {
-  width: 22px;
-  height: 22px;
+.quick-btn svg {
+  width: 20px;
+  height: 20px;
 }
 
-.row__call:hover,
-.row__call:focus-visible {
-  background: var(--brand);
-  color: var(--brand-fg);
+.quick-btn:hover,
+.quick-btn:focus-visible {
+  background: var(--navy-800);
   outline: none;
+  transform: translateY(-1px);
 }
 
-.row__call:active {
-  background: var(--brand);
-  color: var(--brand-fg);
+.quick-btn:active {
+  transform: scale(0.96);
 }
 
-/* 번호가 없는 줄도 오른쪽 끝을 맞추려고 같은 폭을 비워 둔다. */
-.row__call--off {
+.quick-btn--off {
+  opacity: 0.28;
   pointer-events: none;
-  background: transparent;
+}
+
+[data-theme="dark"] .quick-btn {
+  background: #d7dde8;
+  color: #121820;
+}
+
+[data-theme="dark"] .quick-btn:hover,
+[data-theme="dark"] .quick-btn:focus-visible {
+  background: #fff;
 }
 
 /* 공석은 사람이 아니므로 눌러도 아무 일이 없어야 한다. */
@@ -810,20 +812,17 @@ body.notebook-page .main {
   font-weight: 600;
 }
 
-.row__vacant-tag {
-  flex-shrink: 0;
-  padding: 2px var(--sp-2);
-  border-radius: var(--r-full);
-  background: var(--surface-sunken);
-  color: var(--text-soft);
-  font-size: var(--fs-2xs);
-  font-weight: 600;
+.row--vacant .row__more,
+.row--vacant .row__hit {
+  pointer-events: none;
 }
 
 /* 펼친 상세 */
 .row__panel {
-  padding: 0 var(--sp-4) var(--sp-4) 64px;
-  border-top: 1px solid var(--border);
+  padding: var(--sp-3) var(--sp-4) var(--sp-4);
+  border: 1px solid var(--border);
+  border-top: 0;
+  border-radius: 0 0 16px 16px;
   background: var(--surface-2);
   animation: fadeIn 0.2s ease both;
 }
@@ -836,8 +835,8 @@ body.notebook-page .main {
   display: flex;
   flex-direction: column;
   gap: 0;
-  margin: var(--sp-3) 0 0;
-  border-top: 1px solid var(--border);
+  margin: 0;
+  border-top: 0;
 }
 
 .detail-row {
@@ -863,7 +862,7 @@ body.notebook-page .main {
 }
 
 .detail-empty {
-  margin: var(--sp-3) 0 0;
+  margin: 0;
   font-size: var(--fs-sm);
   color: var(--text-soft);
 }
@@ -880,14 +879,14 @@ body.notebook-page .main {
   justify-content: center;
   gap: var(--sp-1);
   flex: 1;
-  min-height: 40px;
+  min-height: var(--touch);
   padding: 0 var(--sp-3);
   border: 1px solid var(--border);
   border-radius: var(--r-md);
   background: var(--surface);
   color: var(--text);
-  font-size: var(--fs-xs);
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  font-weight: 700;
   white-space: nowrap;
   cursor: pointer;
   transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s var(--ease);
@@ -903,8 +902,8 @@ body.notebook-page .main {
 }
 
 .row-action svg {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
 }
 
 /* 비고 */
@@ -1242,8 +1241,11 @@ body.notebook-page .main {
   display: flex;
   align-items: center;
   gap: var(--sp-3);
-  padding: var(--sp-3);
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
   background: var(--surface);
+  box-shadow: var(--shadow-1);
 }
 
 .skeleton__avatar,
@@ -1254,8 +1256,8 @@ body.notebook-page .main {
 
 .skeleton__avatar {
   flex-shrink: 0;
-  width: 40px;
-  height: 40px;
+  width: 56px;
+  height: 56px;
   border-radius: var(--r-full);
 }
 
@@ -1632,12 +1634,13 @@ body.notebook-page .main {
 
 /* ── 반응형 ──────────────────────────────────────────── */
 @media (max-width: 380px) {
-  .row__call {
-    width: 46px;
+  .row__quick {
+    padding-left: 0;
+    justify-content: flex-start;
   }
 
-  .row__panel {
-    padding-left: var(--sp-4);
+  .row__layout {
+    padding-right: 24px;
   }
 }
 

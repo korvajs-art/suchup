@@ -60,12 +60,15 @@
   window.addEventListener("beforeinstallprompt", (e) => {
     e.preventDefault();
     deferred = e;
-    showBanner("android");
+    // 목록을 가리지 않도록 잠시 뒤 안내한다.
+    setTimeout(() => showBanner("android"), 8000);
   });
 
   // iOS 는 설치 이벤트가 없어 Safari 안내만 보여 준다.
   if (isIos() && !isStandalone()) {
-    document.addEventListener("DOMContentLoaded", () => showBanner("ios"));
+    document.addEventListener("DOMContentLoaded", () => {
+      setTimeout(() => showBanner("ios"), 8000);
+    });
   }
 
   document.addEventListener("click", (e) => {
