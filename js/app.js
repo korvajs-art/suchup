@@ -28,7 +28,11 @@
     filterSheet: document.getElementById("filterSheet"),
     filterReset: document.getElementById("filterReset"),
     filterApply: document.getElementById("filterApply"),
-    regionChips: document.getElementById("regionChips"),
+    regionPicker: document.getElementById("regionPicker"),
+    regionPickerName: document.getElementById("regionPickerName"),
+    regionPickerCount: document.getElementById("regionPickerCount"),
+    regionSheet: document.getElementById("regionSheet"),
+    regionList: document.getElementById("regionList"),
     positionChips: document.getElementById("positionChips"),
     deptFilter: document.getElementById("deptFilter"),
     hideVacant: document.getElementById("hideVacant"),
@@ -85,16 +89,26 @@
   function buildRegionChips() {
     const counts = new Map();
     CONTACTS.forEach((c) => counts.set(c.region, (counts.get(c.region) || 0) + 1));
-    const chips = [
-      `<button type="button" class="region-rail__item" role="tab" data-region="" aria-selected="${filters.region === ""}" aria-pressed="${filters.region === ""}"><span class="region-rail__name">전체</span><span class="region-rail__count">${CONTACTS.length}</span></button>`,
-      ...regionsInData().map((r) => {
-        const on = filters.region === r;
-        return `<button type="button" class="region-rail__item" role="tab" data-region="${escapeHtml(r)}" aria-selected="${on}" aria-pressed="${on}"><span class="region-rail__name">${escapeHtml(r)}</span><span class="region-rail__count">${counts.get(r) || 0}</span></button>`;
-      }),
+
+    const items = [
+      { region: "", name: "전체", count: CONTACTS.length },
+      ...regionsInData().map((r) => ({ region: r, name: r, count: counts.get(r) || 0 })),
     ];
-    els.regionChips.innerHTML = chips.join("");
-    const active = els.regionChips.querySelector('.region-rail__item[aria-selected="true"]');
-    active?.scrollIntoView({ block: "nearest" });
+
+    els.regionList.innerHTML = items
+      .map((item) => {
+        const on = filters.region === item.region;
+        return `<button type="button" class="region-option" role="option" data-region="${escapeHtml(item.region)}" aria-selected="${on}">
+          <span class="region-option__name">${escapeHtml(item.name)}</span>
+          <span class="region-option__count">${item.count}명</span>
+          <span class="region-option__mark" aria-hidden="true">${on ? "✓" : ""}</span>
+        </button>`;
+      })
+      .join("");
+
+    const current = items.find((item) => item.region === filters.region) || items[0];
+    els.regionPickerName.textContent = current.name;
+    els.regionPickerCount.textContent = `${current.count}명`;
   }
 
   function buildPositionChips() {
@@ -372,8 +386,23 @@
   }
 
   function setSheetOpen(open) {
+    if (open) {
+      els.regionSheet.hidden = true;
+      els.regionPicker.setAttribute("aria-expanded", "false");
+    }
     els.filterSheet.hidden = !open;
     if (open) els.filterSheet.querySelector(".sheet__panel").focus?.();
+  }
+
+  function setRegionSheetOpen(open) {
+    if (open) els.filterSheet.hidden = true;
+    els.regionSheet.hidden = !open;
+    els.regionPicker.setAttribute("aria-expanded", String(open));
+    if (open) {
+      const selected = els.regionList.querySelector('[aria-selected="true"]');
+      selected?.scrollIntoView({ block: "nearest" });
+      els.regionSheet.querySelector(".sheet__panel").focus?.();
+    }
   }
 
   /* ── 데이터 ─────────────────────────────────────────── */
@@ -467,17 +496,26 @@
       render();
     });
 
-    els.regionChips.addEventListener("click", (e) => {
-      const chip = e.target.closest("[data-region]");
-      if (!chip) return;
-      filters.region = chip.dataset.region;
+    els.regionPicker.addEventListener("click", () => {
+      setRegionSheetOpen(els.regionSheet.hidden);
+    });
+
+    els.regionList.addEventListener("click", (e) => {
+      const option = e.target.closest("[data-region]");
+      if (!option) return;
+      filters.region = option.dataset.region;
       filters.dept = "";
       buildRegionChips();
       buildDeptOptions();
       syncFilterBadge();
       openIds.clear();
       render();
+      setRegionSheetOpen(false);
       els.contactList.closest(".list-scroll")?.scrollTo({ top: 0 });
+    });
+
+    els.regionSheet.addEventListener("click", (e) => {
+      if (e.target.closest("[data-region-close]")) setRegionSheetOpen(false);
     });
 
     els.positionChips.addEventListener("click", (e) => {
@@ -609,7 +647,8 @@
 
     document.addEventListener("keydown", (e) => {
       if (e.key !== "Escape") return;
-      if (!els.filterSheet.hidden) setSheetOpen(false);
+      if (!els.regionSheet.hidden) setRegionSheetOpen(false);
+      else if (!els.filterSheet.hidden) setSheetOpen(false);
       else setDrawerOpen(false);
     });
   }

@@ -112,27 +112,44 @@
         </button>
       </div>
 
-      <div class="workspace">
-        <nav class="region-rail" id="regionChips" role="tablist" aria-label="소속 선택"></nav>
+      <button type="button" class="region-picker" id="regionPicker" aria-haspopup="dialog" aria-expanded="false" aria-controls="regionSheet">
+        <span class="region-picker__label">소속</span>
+        <span class="region-picker__value">
+          <span class="region-picker__name" id="regionPickerName">전체</span>
+          <span class="region-picker__count" id="regionPickerCount">0명</span>
+        </span>
+        <span class="region-picker__chev" aria-hidden="true">▾</span>
+      </button>
 
-        <div class="list-scroll">
-          <div class="skeleton" id="loadingState" aria-hidden="true" hidden>
-            <div class="skeleton__row"><span class="skeleton__avatar"></span><span class="skeleton__lines"><span class="skeleton__line"></span><span class="skeleton__line skeleton__line--short"></span></span></div>
-            <div class="skeleton__row"><span class="skeleton__avatar"></span><span class="skeleton__lines"><span class="skeleton__line"></span><span class="skeleton__line skeleton__line--short"></span></span></div>
-            <div class="skeleton__row"><span class="skeleton__avatar"></span><span class="skeleton__lines"><span class="skeleton__line"></span><span class="skeleton__line skeleton__line--short"></span></span></div>
-            <div class="skeleton__row"><span class="skeleton__avatar"></span><span class="skeleton__lines"><span class="skeleton__line"></span><span class="skeleton__line skeleton__line--short"></span></span></div>
-            <div class="skeleton__row"><span class="skeleton__avatar"></span><span class="skeleton__lines"><span class="skeleton__line"></span><span class="skeleton__line skeleton__line--short"></span></span></div>
-          </div>
-          <div class="status-msg status-msg--error" id="errorState" hidden>
-            <p>연락처를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>
-            <button type="button" class="retry-btn" id="retryBtn">다시 시도</button>
-          </div>
-          <p class="list-meta" id="resultCount" aria-live="polite" hidden></p>
-          <div class="groups" id="contactList" hidden></div>
-          <p class="empty-state" id="emptyState" hidden>검색 결과가 없습니다.</p>
+      <div class="list-scroll">
+        <div class="skeleton" id="loadingState" aria-hidden="true" hidden>
+          <div class="skeleton__row"><span class="skeleton__avatar"></span><span class="skeleton__lines"><span class="skeleton__line"></span><span class="skeleton__line skeleton__line--short"></span></span></div>
+          <div class="skeleton__row"><span class="skeleton__avatar"></span><span class="skeleton__lines"><span class="skeleton__line"></span><span class="skeleton__line skeleton__line--short"></span></span></div>
+          <div class="skeleton__row"><span class="skeleton__avatar"></span><span class="skeleton__lines"><span class="skeleton__line"></span><span class="skeleton__line skeleton__line--short"></span></span></div>
+          <div class="skeleton__row"><span class="skeleton__avatar"></span><span class="skeleton__lines"><span class="skeleton__line"></span><span class="skeleton__line skeleton__line--short"></span></span></div>
+          <div class="skeleton__row"><span class="skeleton__avatar"></span><span class="skeleton__lines"><span class="skeleton__line"></span><span class="skeleton__line skeleton__line--short"></span></span></div>
         </div>
+        <div class="status-msg status-msg--error" id="errorState" hidden>
+          <p>연락처를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>
+          <button type="button" class="retry-btn" id="retryBtn">다시 시도</button>
+        </div>
+        <p class="list-meta" id="resultCount" aria-live="polite" hidden></p>
+        <div class="groups" id="contactList" hidden></div>
+        <p class="empty-state" id="emptyState" hidden>검색 결과가 없습니다.</p>
       </div>
     </main>
+  </div>
+
+  <div class="sheet" id="regionSheet" role="dialog" aria-modal="true" aria-labelledby="regionSheetTitle" hidden>
+    <div class="sheet__backdrop" data-region-close></div>
+    <div class="sheet__panel sheet__panel--list">
+      <div class="sheet__grabber" aria-hidden="true"></div>
+      <h2 class="sheet__title" id="regionSheetTitle">소속 고르기</h2>
+      <div class="region-list" id="regionList" role="listbox" aria-label="소속 목록"></div>
+      <div class="sheet__actions">
+        <button type="button" class="primary-btn" data-region-close>닫기</button>
+      </div>
+    </div>
   </div>
 
   <div class="sheet" id="filterSheet" role="dialog" aria-modal="true" aria-labelledby="filterSheetTitle" hidden>
