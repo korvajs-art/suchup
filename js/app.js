@@ -3,14 +3,15 @@
   const SEARCH_DELAY = 140;
 
   // 이름·직위·시군구·연락처는 줄에 이미 보이므로 상세에서는 빼고 나머지만 보여 준다.
+  // 임관과 기수는 반드시 두 줄로 나눈다. 명부에 "육사30"처럼 붙어 있으면 여기서 푼다.
   const DETAIL_FIELDS = [
     ["선임일", "appointDate"],
     ["생년월일", "birthDate"],
     ["군별", "militaryBranch"],
     ["계급", "militaryRank"],
-    ["임관/기수", "commission"],
-    ["임관구분", "commissionType"],
+    ["임관", "commission"],
     ["기수", "classNo"],
+    ["임관구분", "commissionType"],
     ["주소", "address"],
     ["이메일", "email"],
   ];
@@ -153,12 +154,14 @@
     const initial = vacant ? "—" : String(contact.name || "?").trim().charAt(0);
     const open = openIds.has(String(contact.id));
 
-    const lead = vacant
-      ? `<span class="row__vacant-tag">${VACANT}</span>`
+    // 어느 시·구 회장인지 한눈에 보이도록 시군구와 직위를 한 줄로 묶는다.
+    const placeRole = [contact.dept, contact.position].filter(Boolean).join(" · ");
+
+    const line2 = vacant
+      ? `<span class="row__role">${escapeHtml(placeRole || VACANT)}</span><span class="row__vacant-tag">${VACANT}</span>`
       : digits
-        ? `<span class="row__phone">${escapeHtml(contact.phone)}</span>`
-        : `<span class="row__phone row__phone--none">번호 없음</span>`;
-    const line2 = `${lead}<span class="row__dept">${escapeHtml(contact.dept || "")}</span>`;
+        ? `<span class="row__role">${escapeHtml(placeRole)}</span><span class="row__phone">${escapeHtml(contact.phone)}</span>`
+        : `<span class="row__role">${escapeHtml(placeRole)}</span><span class="row__phone row__phone--none">번호 없음</span>`;
 
     const call = digits
       ? `<a class="row__call" href="tel:${digits}" aria-label="${escapeHtml(contact.name)} 전화걸기">${ICON.phone}</a>`
@@ -169,7 +172,7 @@
         <button type="button" class="row__main" aria-expanded="${open}">
           <span class="row__avatar" data-tone="${toneOf(contact.region)}" aria-hidden="true">${escapeHtml(initial)}</span>
           <span class="row__body">
-            <span class="row__line"><span class="row__name">${escapeHtml(contact.name)}</span><span class="row__pos">${escapeHtml(contact.position || "")}</span></span>
+            <span class="row__line"><span class="row__name">${escapeHtml(contact.name)}</span></span>
             <span class="row__line">${line2}</span>
           </span>
           <span class="row__caret" aria-hidden="true">${ICON.caret}</span>
@@ -180,11 +183,24 @@
     </li>`;
   }
 
+  // "육사30" · "3사12"처럼 끝에 숫자만 붙은 값은 임관/기수로 나눈다.
+  function splitCommission(contact) {
+    const rawComm = String(contact.commission || "").trim();
+    const rawClass = String(contact.classNo || "").trim();
+    if (rawClass || !rawComm) return { commission: rawComm, classNo: rawClass };
+    const m = rawComm.match(/^(.+?)(\d+)$/);
+    if (!m) return { commission: rawComm, classNo: "" };
+    return { commission: m[1].trim(), classNo: m[2] };
+  }
+
   function detailHtml(contact) {
+    const split = splitCommission(contact);
+    const view = { ...contact, commission: split.commission, classNo: split.classNo };
+
     const rows = DETAIL_FIELDS.map(([label, key]) => {
-      const value = contact[key];
+      const value = view[key];
       if (!value) return "";
-      return `<dt>${label}</dt><dd>${escapeHtml(value)}</dd>`;
+      return `<div class="detail-row"><dt>${label}</dt><dd>${escapeHtml(value)}</dd></div>`;
     }).join("");
 
     const body = rows

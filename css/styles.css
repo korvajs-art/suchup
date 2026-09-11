@@ -384,12 +384,12 @@ body.notebook-page .main {
   gap: var(--sp-2);
   flex: 1;
   min-width: 0;
-  height: 48px;
+  height: 44px;
   padding: 0 var(--sp-3) 0 var(--sp-4);
   border: 1px solid var(--border);
-  border-radius: var(--r-full);
+  border-radius: var(--r-md);
   background: var(--surface);
-  box-shadow: var(--shadow-1);
+  box-shadow: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -450,13 +450,13 @@ body.notebook-page .main {
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   border: 1px solid var(--border);
-  border-radius: var(--r-full);
+  border-radius: var(--r-md);
   background: var(--surface);
   color: var(--text-muted);
-  box-shadow: var(--shadow-1);
+  box-shadow: none;
   cursor: pointer;
   transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s var(--ease);
 }
@@ -493,15 +493,16 @@ body.notebook-page .main {
   display: none;
 }
 
-/* 소속 칩. 가로로 넘기며 고른다. */
+/* 소속 칩. 알약 버튼보다 수첩의 색인(탭)에 가깝게. */
 .chips {
   display: flex;
-  gap: var(--sp-2);
+  gap: var(--sp-1);
   margin: 0 calc(-1 * var(--sp-4)) var(--sp-2);
-  padding: var(--sp-1) var(--sp-4);
+  padding: 0 var(--sp-4);
   overflow-x: auto;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
+  border-bottom: 1px solid var(--border);
 }
 
 .chips::-webkit-scrollbar {
@@ -510,17 +511,18 @@ body.notebook-page .main {
 
 .chip {
   flex-shrink: 0;
-  min-height: 34px;
+  min-height: 36px;
   padding: 0 var(--sp-3);
-  border: 1px solid var(--border);
-  border-radius: var(--r-full);
-  background: var(--surface);
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: transparent;
   color: var(--text-muted);
   font-size: var(--fs-sm);
   font-weight: 600;
   white-space: nowrap;
   cursor: pointer;
-  transition: background 0.18s var(--ease), color 0.18s var(--ease), border-color 0.18s var(--ease);
+  transition: color 0.18s var(--ease), border-color 0.18s var(--ease);
 }
 
 .chip:hover {
@@ -528,9 +530,9 @@ body.notebook-page .main {
 }
 
 .chip[aria-pressed="true"] {
-  border-color: var(--brand);
-  background: var(--brand);
-  color: var(--brand-fg);
+  border-bottom-color: var(--brand);
+  background: transparent;
+  color: var(--brand);
 }
 
 .chip__count {
@@ -580,12 +582,13 @@ body.notebook-page .main {
   align-items: baseline;
   gap: var(--sp-2);
   margin: 0 0 var(--sp-2);
-  padding: var(--sp-2) var(--sp-1);
+  padding: var(--sp-2) 2px;
   background: var(--bg);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-xs);
   font-weight: 700;
-  letter-spacing: -0.01em;
-  color: var(--brand-soft-fg);
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  text-transform: none;
 }
 
 .group__count {
@@ -597,19 +600,25 @@ body.notebook-page .main {
 .rows {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 0;
   margin: 0;
   padding: 0;
   list-style: none;
-  border-radius: var(--r-lg);
-  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
   overflow: hidden;
-  box-shadow: var(--shadow-2);
+  box-shadow: none;
 }
 
 .row {
   background: var(--surface);
+  border-bottom: 1px solid var(--border);
   transition: background 0.2s ease;
+}
+
+.row:last-child {
+  border-bottom: 0;
 }
 
 .row__top {
@@ -641,24 +650,25 @@ body.notebook-page .main {
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: var(--r-full);
-  background: var(--tone-bg, var(--surface-sunken));
-  color: var(--tone-fg, var(--text-muted));
-  font-size: var(--fs-md);
+  background: var(--brand-soft);
+  color: var(--brand-soft-fg);
+  font-size: var(--fs-sm);
   font-weight: 700;
   letter-spacing: -0.02em;
 }
 
-.row__avatar[data-tone="0"] { --tone-bg: var(--tone-0-bg); --tone-fg: var(--tone-0-fg); }
-.row__avatar[data-tone="1"] { --tone-bg: var(--tone-1-bg); --tone-fg: var(--tone-1-fg); }
-.row__avatar[data-tone="2"] { --tone-bg: var(--tone-2-bg); --tone-fg: var(--tone-2-fg); }
-.row__avatar[data-tone="3"] { --tone-bg: var(--tone-3-bg); --tone-fg: var(--tone-3-fg); }
-.row__avatar[data-tone="4"] { --tone-bg: var(--tone-4-bg); --tone-fg: var(--tone-4-fg); }
-.row__avatar[data-tone="5"] { --tone-bg: var(--tone-5-bg); --tone-fg: var(--tone-5-fg); }
-.row__avatar[data-tone="6"] { --tone-bg: var(--tone-6-bg); --tone-fg: var(--tone-6-fg); }
-.row__avatar[data-tone="7"] { --tone-bg: var(--tone-7-bg); --tone-fg: var(--tone-7-fg); }
+/* 소속 색 띠는 유지하되, 채도를 낮춰 수첩 목록이 산만하지 않게 한다. */
+.row__avatar[data-tone="0"] { --tone-bg: var(--tone-0-bg); --tone-fg: var(--tone-0-fg); background: var(--tone-bg); color: var(--tone-fg); }
+.row__avatar[data-tone="1"] { --tone-bg: var(--tone-1-bg); --tone-fg: var(--tone-1-fg); background: var(--tone-bg); color: var(--tone-fg); }
+.row__avatar[data-tone="2"] { --tone-bg: var(--tone-2-bg); --tone-fg: var(--tone-2-fg); background: var(--tone-bg); color: var(--tone-fg); }
+.row__avatar[data-tone="3"] { --tone-bg: var(--tone-3-bg); --tone-fg: var(--tone-3-fg); background: var(--tone-bg); color: var(--tone-fg); }
+.row__avatar[data-tone="4"] { --tone-bg: var(--tone-4-bg); --tone-fg: var(--tone-4-fg); background: var(--tone-bg); color: var(--tone-fg); }
+.row__avatar[data-tone="5"] { --tone-bg: var(--tone-5-bg); --tone-fg: var(--tone-5-fg); background: var(--tone-bg); color: var(--tone-fg); }
+.row__avatar[data-tone="6"] { --tone-bg: var(--tone-6-bg); --tone-fg: var(--tone-6-fg); background: var(--tone-bg); color: var(--tone-fg); }
+.row__avatar[data-tone="7"] { --tone-bg: var(--tone-7-bg); --tone-fg: var(--tone-7-fg); background: var(--tone-bg); color: var(--tone-fg); }
 
 .row__body {
   display: flex;
@@ -680,6 +690,17 @@ body.notebook-page .main {
   font-weight: 700;
   letter-spacing: -0.02em;
   white-space: nowrap;
+}
+
+.row__role {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .row__pos {
@@ -704,12 +725,13 @@ body.notebook-page .main {
 }
 
 .row__phone {
-  flex: 1;
-  min-width: 0;
+  flex-shrink: 0;
+  margin-left: var(--sp-2);
   font-size: var(--fs-xs);
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.01em;
+  white-space: nowrap;
 }
 
 .row__phone--none {
@@ -794,23 +816,33 @@ body.notebook-page .main {
 }
 
 .detail-grid {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--sp-1) var(--sp-3);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
   margin: var(--sp-3) 0 0;
+  border-top: 1px solid var(--border);
+}
+
+.detail-row {
+  display: grid;
+  grid-template-columns: 4.5em 1fr;
+  gap: var(--sp-3);
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
   font-size: var(--fs-sm);
 }
 
-.detail-grid dt {
+.detail-row dt {
   color: var(--text-soft);
   font-weight: 500;
   white-space: nowrap;
 }
 
-.detail-grid dd {
+.detail-row dd {
   margin: 0;
   color: var(--text);
   word-break: break-word;
+  font-variant-numeric: tabular-nums;
 }
 
 .detail-empty {
@@ -1003,6 +1035,22 @@ body.notebook-page .main {
   display: flex;
   flex-wrap: wrap;
   gap: var(--sp-2);
+}
+
+.sheet__chips .chip {
+  min-height: 34px;
+  padding: 0 var(--sp-3);
+  border: 1px solid var(--border);
+  border-bottom-width: 1px;
+  border-radius: var(--r-full);
+  background: var(--surface);
+  color: var(--text-muted);
+}
+
+.sheet__chips .chip[aria-pressed="true"] {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: var(--brand-fg);
 }
 
 .sheet__select {
