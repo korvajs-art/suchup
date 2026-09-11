@@ -377,9 +377,11 @@
         location.replace("login.html");
         return;
       }
-      if (!res.ok) throw new Error("bad status");
-      const data = await res.json();
-      CONTACTS = (Array.isArray(data.contacts) ? data.contacts : []).map(withHaystack);
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        throw new Error((data && data.error) || "연락처를 불러오지 못했습니다.");
+      }
+      CONTACTS = (Array.isArray(data?.contacts) ? data.contacts : []).map(withHaystack);
       buildRegionChips();
       buildPositionChips();
       buildDeptOptions();
@@ -389,6 +391,8 @@
     } catch (err) {
       console.error(err);
       setUiMode("error");
+      const msg = els.errorState?.querySelector("p");
+      if (msg && err?.message) msg.textContent = String(err.message);
     }
   }
 

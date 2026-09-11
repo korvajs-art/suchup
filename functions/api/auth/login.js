@@ -7,14 +7,14 @@ export async function onRequestPost(context) {
   const { request, env } = context;
 
   if (!env.DB) {
-    return error("Database binding missing", 500);
+    return error("데이터베이스 연결이 없습니다.", 500);
   }
 
   await ensureSchema(env);
 
   const body = await readJson(request);
   if (!body || !body.username || !body.password) {
-    return error("username and password are required", 400);
+    return error("아이디와 비밀번호를 입력해 주세요.", 400);
   }
 
   await cleanupExpiredSessions(env);
@@ -26,12 +26,12 @@ export async function onRequestPost(context) {
     .first();
 
   if (!admin) {
-    return error("Invalid credentials", 401);
+    return error("아이디 또는 비밀번호가 올바르지 않습니다.", 401);
   }
 
   const ok = await verifyPassword(String(body.password), admin.salt, admin.password_hash);
   if (!ok) {
-    return error("Invalid credentials", 401);
+    return error("아이디 또는 비밀번호가 올바르지 않습니다.", 401);
   }
 
   const role = admin.role === "admin" ? "admin" : "user";

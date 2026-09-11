@@ -1,6 +1,7 @@
 /* 앱처럼 설치할 수 있게 하는 최소 서비스 워커.
-   화면·스타일·스크립트는 캐시에 두고, 연락처 API 는 항상 최신을 받는다. */
-const CACHE = "suchup-shell-v3";
+   HTML·CSS·JS 는 네트워크를 먼저 보고, 실패할 때만 캐시를 쓴다.
+   연락처 API 는 캐시하지 않는다. */
+const CACHE = "suchup-shell-v4";
 const SHELL = [
   "./",
   "./index.html",
@@ -42,18 +43,16 @@ self.addEventListener("fetch", (event) => {
   // API·로그인은 캐시하지 않는다. 항상 최신 연락처를 받는다.
   if (url.pathname.startsWith("/api/")) return;
 
+  // 화면 껍데기는 최신 배포를 바로 받게 네트워크 우선.
   event.respondWith(
-    caches.match(req).then((hit) => {
-      const net = fetch(req)
-        .then((res) => {
-          if (res.ok && url.origin === self.location.origin) {
-            const copy = res.clone();
-            caches.open(CACHE).then((c) => c.put(req, copy));
-          }
-          return res;
-        })
-        .catch(() => hit);
-      return hit || net;
-    })
+    fetch(req)
+      .then((res) => {
+        if (res.ok && url.origin === self.location.origin) {
+          const copy = res.clone();
+          caches.open(CACHE).then((c) => c.put(req, copy));
+        }
+        return res;
+      })
+      .catch(() => caches.match(req).then((hit) => hit || Response.error()))
   );
 });
