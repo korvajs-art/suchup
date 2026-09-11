@@ -112,23 +112,25 @@
         </button>
       </div>
 
-      <div class="chips" id="regionChips" role="group" aria-label="소속 선택"></div>
+      <div class="workspace">
+        <nav class="region-rail" id="regionChips" role="tablist" aria-label="소속 선택"></nav>
 
-      <div class="list-scroll">
-        <div class="skeleton" id="loadingState" aria-hidden="true" hidden>
-          <div class="skeleton__row"><span class="skeleton__avatar"></span><span class="skeleton__lines"><span class="skeleton__line"></span><span class="skeleton__line skeleton__line--short"></span></span></div>
-          <div class="skeleton__row"><span class="skeleton__avatar"></span><span class="skeleton__lines"><span class="skeleton__line"></span><span class="skeleton__line skeleton__line--short"></span></span></div>
-          <div class="skeleton__row"><span class="skeleton__avatar"></span><span class="skeleton__lines"><span class="skeleton__line"></span><span class="skeleton__line skeleton__line--short"></span></span></div>
-          <div class="skeleton__row"><span class="skeleton__avatar"></span><span class="skeleton__lines"><span class="skeleton__line"></span><span class="skeleton__line skeleton__line--short"></span></span></div>
-          <div class="skeleton__row"><span class="skeleton__avatar"></span><span class="skeleton__lines"><span class="skeleton__line"></span><span class="skeleton__line skeleton__line--short"></span></span></div>
+        <div class="list-scroll">
+          <div class="skeleton" id="loadingState" aria-hidden="true" hidden>
+            <div class="skeleton__row"><span class="skeleton__avatar"></span><span class="skeleton__lines"><span class="skeleton__line"></span><span class="skeleton__line skeleton__line--short"></span></span></div>
+            <div class="skeleton__row"><span class="skeleton__avatar"></span><span class="skeleton__lines"><span class="skeleton__line"></span><span class="skeleton__line skeleton__line--short"></span></span></div>
+            <div class="skeleton__row"><span class="skeleton__avatar"></span><span class="skeleton__lines"><span class="skeleton__line"></span><span class="skeleton__line skeleton__line--short"></span></span></div>
+            <div class="skeleton__row"><span class="skeleton__avatar"></span><span class="skeleton__lines"><span class="skeleton__line"></span><span class="skeleton__line skeleton__line--short"></span></span></div>
+            <div class="skeleton__row"><span class="skeleton__avatar"></span><span class="skeleton__lines"><span class="skeleton__line"></span><span class="skeleton__line skeleton__line--short"></span></span></div>
+          </div>
+          <div class="status-msg status-msg--error" id="errorState" hidden>
+            <p>연락처를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>
+            <button type="button" class="retry-btn" id="retryBtn">다시 시도</button>
+          </div>
+          <p class="list-meta" id="resultCount" aria-live="polite" hidden></p>
+          <div class="groups" id="contactList" hidden></div>
+          <p class="empty-state" id="emptyState" hidden>검색 결과가 없습니다.</p>
         </div>
-        <div class="status-msg status-msg--error" id="errorState" hidden>
-          <p>연락처를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>
-          <button type="button" class="retry-btn" id="retryBtn">다시 시도</button>
-        </div>
-        <p class="list-meta" id="resultCount" aria-live="polite" hidden></p>
-        <div class="groups" id="contactList" hidden></div>
-        <p class="empty-state" id="emptyState" hidden>검색 결과가 없습니다.</p>
       </div>
     </main>
   </div>

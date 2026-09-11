@@ -86,13 +86,15 @@
     const counts = new Map();
     CONTACTS.forEach((c) => counts.set(c.region, (counts.get(c.region) || 0) + 1));
     const chips = [
-      `<button type="button" class="chip" data-region="" aria-pressed="${filters.region === ""}">전체<span class="chip__count">${CONTACTS.length}</span></button>`,
+      `<button type="button" class="region-rail__item" role="tab" data-region="" aria-selected="${filters.region === ""}" aria-pressed="${filters.region === ""}"><span class="region-rail__name">전체</span><span class="region-rail__count">${CONTACTS.length}</span></button>`,
       ...regionsInData().map((r) => {
         const on = filters.region === r;
-        return `<button type="button" class="chip" data-region="${escapeHtml(r)}" aria-pressed="${on}">${escapeHtml(r)}<span class="chip__count">${counts.get(r) || 0}</span></button>`;
+        return `<button type="button" class="region-rail__item" role="tab" data-region="${escapeHtml(r)}" aria-selected="${on}" aria-pressed="${on}"><span class="region-rail__name">${escapeHtml(r)}</span><span class="region-rail__count">${counts.get(r) || 0}</span></button>`;
       }),
     ];
     els.regionChips.innerHTML = chips.join("");
+    const active = els.regionChips.querySelector('.region-rail__item[aria-selected="true"]');
+    active?.scrollIntoView({ block: "nearest" });
   }
 
   function buildPositionChips() {
@@ -475,7 +477,7 @@
       syncFilterBadge();
       openIds.clear();
       render();
-      els.contactList.parentElement.scrollTop = 0;
+      els.contactList.closest(".list-scroll")?.scrollTo({ top: 0 });
     });
 
     els.positionChips.addEventListener("click", (e) => {

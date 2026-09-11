@@ -84,6 +84,14 @@ body.notebook-page .main {
   overflow: hidden;
 }
 
+body.notebook-page .workspace {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: 0;
+  overflow: hidden;
+}
+
 /* ── 헤더 ────────────────────────────────────────────── */
 .header {
   display: flex;
@@ -499,22 +507,81 @@ body.notebook-page .main {
   display: none;
 }
 
-/* 소속 칩. 알약 버튼보다 수첩의 색인(탭)에 가깝게. */
-.chips {
+/* 소속 사이드바 — 가로 칩 대신 왼쪽에서 세로로 고른다. */
+.workspace {
   display: flex;
-  gap: var(--sp-1);
-  margin: 0 calc(-1 * var(--sp-4)) var(--sp-2);
-  padding: 0 var(--sp-4);
-  overflow-x: auto;
-  scrollbar-width: none;
+  align-items: stretch;
+  min-height: 0;
+}
+
+.region-rail {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: 78px;
+  margin: 0 0 0 calc(-1 * var(--sp-4));
+  padding: 4px 0 calc(var(--sp-8) + var(--safe-b));
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
   -webkit-overflow-scrolling: touch;
-  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 72%, var(--bg));
+  scrollbar-width: thin;
 }
 
-.chips::-webkit-scrollbar {
-  display: none;
+.region-rail__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 100%;
+  min-height: 52px;
+  padding: 8px 4px;
+  border: 0;
+  border-right: 3px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.18s var(--ease), color 0.18s var(--ease), border-color 0.18s var(--ease);
 }
 
+.region-rail__item:hover {
+  color: var(--text);
+  background: var(--surface-2);
+}
+
+.region-rail__item[aria-selected="true"],
+.region-rail__item[aria-pressed="true"] {
+  color: var(--brand-soft-fg);
+  background: var(--brand-soft);
+  border-right-color: var(--brand);
+}
+
+.region-rail__name {
+  font-size: var(--fs-sm);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  text-align: center;
+  word-break: keep-all;
+}
+
+.region-rail__count {
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  color: var(--text-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.region-rail__item[aria-selected="true"] .region-rail__count,
+.region-rail__item[aria-pressed="true"] .region-rail__count {
+  color: var(--brand-soft-fg);
+  opacity: 0.85;
+}
+
+/* 시트(상세검색) 안 직위 칩 */
 .chip {
   flex-shrink: 0;
   min-height: 44px;
@@ -551,9 +618,10 @@ body.notebook-page .main {
 /* ── 목록 ────────────────────────────────────────────── */
 .list-scroll {
   flex: 1;
+  min-width: 0;
   min-height: 0;
-  margin: 0 calc(-1 * var(--sp-4));
-  padding: 0 var(--sp-4) calc(var(--sp-8) + var(--safe-b));
+  margin: 0 calc(-1 * var(--sp-4)) 0 0;
+  padding: 0 var(--sp-3) calc(var(--sp-8) + var(--safe-b)) var(--sp-3);
   overflow-y: auto;
   overscroll-behavior-y: contain;
   -webkit-overflow-scrolling: touch;
@@ -858,6 +926,21 @@ body.notebook-page .main {
   margin: 0;
   font-size: var(--fs-sm);
   color: var(--text-soft);
+}
+
+.detail-photo {
+  display: flex;
+  justify-content: center;
+  margin: 0 0 var(--sp-3);
+}
+
+.detail-photo img {
+  width: 96px;
+  height: 96px;
+  border-radius: var(--r-full);
+  object-fit: cover;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border);
 }
 
 .row__actions {
@@ -1665,5 +1748,14 @@ body.notebook-page .main {
     box-shadow: none;
     backdrop-filter: none;
     padding: calc(var(--sp-3) + var(--safe-t)) var(--sp-4) 0;
+  }
+
+  .region-rail {
+    width: 96px;
+  }
+
+  .region-rail__item {
+    min-height: 56px;
+    padding: 10px 6px;
   }
 }
