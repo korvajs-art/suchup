@@ -6,7 +6,9 @@
     "db:schema:local": "wrangler d1 execute suchup --file=schema.sql --local --persist-to .wrangler/state",
     "db:seed:local": "wrangler d1 execute suchup --file=seed.sql --local --persist-to .wrangler/state",
     "db:schema:remote": "wrangler d1 execute suchup --file=schema.sql --remote",
-    "db:seed:remote": "wrangler d1 execute suchup --file=seed.sql --remote"
+    "db:seed:remote": "wrangler d1 execute suchup --file=seed.sql --remote",
+    "db:delegates:local": "wrangler d1 execute suchup --file=seed-delegates.sql --local --persist-to .wrangler/state",
+    "db:delegates:remote": "wrangler d1 execute suchup --file=seed-delegates.sql --remote"
   },
   "devDependencies": {
     "wrangler": "^4.0.0"

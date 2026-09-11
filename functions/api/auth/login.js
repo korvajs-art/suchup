@@ -20,7 +20,7 @@ export async function onRequestPost(context) {
   await cleanupExpiredSessions(env);
 
   const admin = await env.DB.prepare(
-    "SELECT id, username, password_hash, salt FROM admins WHERE username = ?"
+    "SELECT id, username, password_hash, salt, role FROM admins WHERE username = ?"
   )
     .bind(String(body.username).trim())
     .first();
@@ -34,11 +34,12 @@ export async function onRequestPost(context) {
     return error("Invalid credentials", 401);
   }
 
+  const role = admin.role === "admin" ? "admin" : "user";
   const secure = new URL(request.url).protocol === "https:";
   const session = await createSession(env, admin.id, secure);
 
   return json(
-    { ok: true, admin: { id: admin.id, username: admin.username } },
+    { ok: true, admin: { id: admin.id, username: admin.username, role } },
     200,
     { "Set-Cookie": session.cookie }
   );

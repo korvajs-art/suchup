@@ -32,12 +32,9 @@
     excelImportBtn: document.getElementById("excelImportBtn"),
     excelTemplateBtn: document.getElementById("excelTemplateBtn"),
     excelMsg: document.getElementById("excelMsg"),
-    gate: document.getElementById("adminGate"),
     app: document.getElementById("adminApp"),
-    gateForm: document.getElementById("adminGateForm"),
-    gatePass: document.getElementById("gatePassword"),
-    gateError: document.getElementById("gateError"),
-    gateBtn: document.getElementById("gateBtn"),
+    regionOptions: document.getElementById("regionOptions"),
+    deptOptions: document.getElementById("deptOptions"),
   };
 
   let contacts = [];
@@ -50,14 +47,23 @@
       .replace(/"/g, "&quot;");
   }
 
+  function fillDatalist(list, values) {
+    list.innerHTML = values.map((v) => `<option value="${escapeHtml(v)}"></option>`).join("");
+  }
+
+  // 소속을 고르면 그 소속의 시군구만 제안하고, 명부에 없는 값은 뒤에 덧붙인다.
+  function refreshOrgOptions() {
+    fillDatalist(els.regionOptions, SuchupOrg.REGION_NAMES);
+    const scoped = SuchupOrg.DEPTS_BY_REGION.get(els.region.value.trim());
+    const base = scoped || SuchupOrg.DEPT_NAMES;
+    const known = new Set(base);
+    const extra = [...new Set(contacts.map((c) => c.dept).filter((d) => d && !known.has(d)))];
+    fillDatalist(els.deptOptions, scoped ? base : [...base, ...extra]);
+  }
+
   function showFormError(msg) {
     els.formError.hidden = !msg;
     els.formError.textContent = msg || "";
-  }
-
-  function showGateError(msg) {
-    els.gateError.hidden = !msg;
-    els.gateError.textContent = msg || "";
   }
 
   function showExcelMsg(msg, isError) {
@@ -104,6 +110,7 @@
       els.form.reset();
       fillForm(null);
     }
+    refreshOrgOptions();
     els.name.focus();
   }
 
@@ -142,6 +149,7 @@
     try {
       const data = await SuchupAuth.api("/api/contacts");
       contacts = data.contacts || [];
+      refreshOrgOptions();
       render();
       els.wrap.hidden = false;
     } catch (err) {
@@ -172,35 +180,25 @@
     };
   }
 
-  async function unlockAdmin(username) {
-    els.gate.hidden = true;
-    els.app.hidden = false;
-    els.user.textContent = username || "Admin";
-    await loadContacts();
-  }
-
   async function boot() {
-    els.gate.hidden = false;
-    els.app.hidden = true;
-    els.gatePass.focus();
+    try {
+      const me = await SuchupAuth.me();
+      if (!me.authenticated) {
+        location.replace("login.html?next=admin");
+        return;
+      }
+      if (me.admin?.role !== "admin") {
+        location.replace("index.html");
+        return;
+      }
+      els.user.textContent = "\uAD00\uB9AC \u00B7 " + (me.admin.username || "Admin");
+      await loadContacts();
+    } catch (_) {
+      location.replace("login.html?next=admin");
+    }
   }
 
-  els.gateForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    showGateError("");
-    els.gateBtn.disabled = true;
-    try {
-      const password = els.gatePass.value;
-      const result = await SuchupAuth.adminGate(password);
-      els.gatePass.value = "";
-      await unlockAdmin(result.admin?.username || "Admin");
-    } catch (err) {
-      showGateError(err.message || "\uC554\uD638\uAC00 \uC62C\uBC14\uB974\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.");
-    } finally {
-      els.gateBtn.disabled = false;
-    }
-  });
-
+  els.region.addEventListener("input", refreshOrgOptions);
   els.addBtn.addEventListener("click", () => openModal(null));
   els.logoutBtn.addEventListener("click", async () => {
     try {

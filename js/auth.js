@@ -38,13 +38,6 @@ window.SuchupAuth = (() => {
     });
   }
 
-  function adminGate(password) {
-    return api("/api/auth/admin-gate", {
-      method: "POST",
-      body: JSON.stringify({ password }),
-    });
-  }
-
   function changePassword(currentPassword, newPassword) {
     return api("/api/auth/password", {
       method: "POST",
@@ -56,5 +49,5 @@ window.SuchupAuth = (() => {
     return api("/api/auth/logout", { method: "POST", body: "{}" });
   }
 
-  return { api, me, login, adminGate, changePassword, logout };
+  return { api, me, login, changePassword, logout };
 })();

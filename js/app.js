@@ -41,10 +41,6 @@
     drawerBackdrop: document.getElementById("drawerBackdrop"),
   };
 
-  function uniqueSorted(values) {
-    return [...new Set(values)].sort((a, b) => a.localeCompare(b, "ko"));
-  }
-
   function fillSelect(select, values, placeholder) {
     const options = [
       `<option value="">${placeholder}</option>`,
@@ -86,7 +82,7 @@
       SuchupSort.uniqueSortedRegions(CONTACTS.map((c) => c.region)),
       L.region
     );
-    fillSelect(els.deptFilter, uniqueSorted(CONTACTS.map((c) => c.dept).filter(Boolean)), L.dept);
+    fillSelect(els.deptFilter, SuchupSort.uniqueSortedDepts(CONTACTS.map((c) => c.dept)), L.dept);
     fillSelect(
       els.positionFilter,
       SuchupSort.uniqueSortedPositions(CONTACTS.map((c) => c.position)),
@@ -147,6 +143,29 @@
     return `<p><strong>${escapeHtml(label)}</strong> ${escapeHtml(value)}</p>`;
   }
 
+  function remarkBlock(contact) {
+    const text = (contact.remark || "").trim();
+    const body = text
+      ? `<p class="contact-remark__text">${escapeHtml(text)}</p>`
+      : `<p class="contact-remark__empty">\uB4F1\uB85D\uB41C \uBE44\uACE0\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4.</p>`;
+    return `
+      <div class="contact-remark" data-remark-wrap="${escapeAttr(contact.id)}">
+        <div class="contact-remark__head">
+          <strong>\uBE44\uACE0</strong>
+          <button type="button" class="contact-remark__edit" data-remark-edit="${escapeAttr(contact.id)}">\uC791\uC131</button>
+        </div>
+        <div class="contact-remark__view" data-remark-view>${body}</div>
+        <form class="contact-remark__form" data-remark-form hidden>
+          <textarea rows="3" maxlength="1000" placeholder="\uC778\uBB3C \uD2B9\uC9D5, \uD2B9\uC774\uC0AC\uD56D, \uBA54\uBAA8 \uB4F1" data-remark-input>${escapeHtml(text)}</textarea>
+          <div class="contact-remark__actions">
+            <button type="button" class="ghost-btn" data-remark-cancel>\uCDE8\uC18C</button>
+            <button type="submit" class="primary-btn">\uC800\uC7A5</button>
+          </div>
+          <p class="form-error" data-remark-error hidden></p>
+        </form>
+      </div>`;
+  }
+
   function renderContactCard(contact) {
     const avatar = contact.avatar || DEFAULT_AVATAR;
     const title = `${contact.name} ${contact.dept || ""}`.trim();
@@ -161,7 +180,6 @@
       detailLine(L.commissionType, contact.commissionType),
       detailLine(L.classNo, contact.classNo),
       detailLine(L.address, contact.address),
-      detailLine(L.remark, contact.remark),
       detailLine(L.email, contact.email),
     ].filter(Boolean);
     if (!details.length) details.push(`<p>${escapeHtml(L.noDetail)}</p>`);
@@ -178,7 +196,10 @@
           <span class="contact-card__toggle" aria-hidden="true"></span>
         </button>
         <div class="contact-card__details">
-          <div class="contact-card__details-inner">${details.join("")}</div>
+          <div class="contact-card__details-inner">
+            ${details.join("")}
+            ${remarkBlock(contact)}
+          </div>
         </div>
         <div class="contact-card__actions">
           <a class="action-btn" href="tel:${digits}">${iconPhone()}<span>${escapeHtml(L.call)}</span></a>
@@ -264,6 +285,16 @@
         location.replace("login.html");
         return false;
       }
+      const isAdmin = me.admin?.role === "admin";
+      const adminLink = document.getElementById("adminLink");
+      if (adminLink) {
+        adminLink.hidden = !isAdmin;
+        adminLink.setAttribute("aria-hidden", String(!isAdmin));
+      }
+      const nameEl = document.getElementById("drawerUserName");
+      const roleEl = document.getElementById("drawerUserRole");
+      if (nameEl) nameEl.textContent = me.admin?.username || "사용자";
+      if (roleEl) roleEl.textContent = isAdmin ? "관리자" : "일반 사용자";
       return true;
     } catch {
       location.replace("login.html");
@@ -285,11 +316,86 @@
         if (contact) downloadVCard(contact);
         return;
       }
+
+      const editBtn = e.target.closest("[data-remark-edit]");
+      if (editBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const wrap = editBtn.closest("[data-remark-wrap]");
+        if (!wrap) return;
+        wrap.querySelector("[data-remark-view]").hidden = true;
+        wrap.querySelector("[data-remark-form]").hidden = false;
+        editBtn.hidden = true;
+        const input = wrap.querySelector("[data-remark-input]");
+        if (input) input.focus();
+        return;
+      }
+
+      const cancelBtn = e.target.closest("[data-remark-cancel]");
+      if (cancelBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const wrap = cancelBtn.closest("[data-remark-wrap]");
+        if (!wrap) return;
+        const id = wrap.getAttribute("data-remark-wrap");
+        const contact = findContact(id);
+        const input = wrap.querySelector("[data-remark-input]");
+        if (input) input.value = contact?.remark || "";
+        wrap.querySelector("[data-remark-form]").hidden = true;
+        wrap.querySelector("[data-remark-view]").hidden = false;
+        const edit = wrap.querySelector("[data-remark-edit]");
+        if (edit) edit.hidden = false;
+        const err = wrap.querySelector("[data-remark-error]");
+        if (err) {
+          err.hidden = true;
+          err.textContent = "";
+        }
+        return;
+      }
+
       const main = e.target.closest(".contact-card__main");
       if (!main) return;
+      if (e.target.closest(".contact-remark")) return;
       const card = main.closest(".contact-card");
       const expanded = card.classList.toggle("is-expanded");
       main.setAttribute("aria-expanded", String(expanded));
+    });
+
+    els.contactList.addEventListener("submit", async (e) => {
+      const form = e.target.closest("[data-remark-form]");
+      if (!form) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const wrap = form.closest("[data-remark-wrap]");
+      const id = wrap?.getAttribute("data-remark-wrap");
+      if (!id) return;
+      const input = form.querySelector("[data-remark-input]");
+      const err = form.querySelector("[data-remark-error]");
+      const remark = (input?.value || "").trim();
+      if (err) {
+        err.hidden = true;
+        err.textContent = "";
+      }
+      try {
+        const data = await SuchupAuth.api("/api/contacts/" + encodeURIComponent(id) + "/remark", {
+          method: "PUT",
+          body: JSON.stringify({ remark }),
+        });
+        const idx = CONTACTS.findIndex((c) => String(c.id) === String(id));
+        if (idx >= 0 && data.contact) CONTACTS[idx] = data.contact;
+        render();
+        const card = els.contactList.querySelector(`.contact-card[data-id="${CSS.escape(String(id))}"]`);
+        if (card) {
+          card.classList.add("is-expanded");
+          const main = card.querySelector(".contact-card__main");
+          if (main) main.setAttribute("aria-expanded", "true");
+        }
+      } catch (ex) {
+        if (err) {
+          err.hidden = false;
+          err.textContent = ex.message || "\uBE44\uACE0 \uC800\uC7A5\uC5D0 \uC2E4\uD328\uD588\uC2B5\uB2C8\uB2E4.";
+        }
+      }
     });
 
     els.menuBtn.addEventListener("click", () => {
@@ -309,60 +415,8 @@
       });
     }
 
-    const passwordBtn = document.getElementById("passwordBtn");
-    const passwordModal = document.getElementById("passwordModal");
-    const passwordForm = document.getElementById("passwordForm");
-    const pwError = document.getElementById("pwError");
-
-    function openPasswordModal() {
-      if (!passwordModal) return;
-      pwError.hidden = true;
-      pwError.textContent = "";
-      passwordForm.reset();
-      passwordModal.hidden = false;
-      setDrawerOpen(false);
-      document.getElementById("pwCurrent").focus();
-    }
-
-    function closePasswordModal() {
-      if (!passwordModal) return;
-      passwordModal.hidden = true;
-    }
-
-    if (passwordBtn) passwordBtn.addEventListener("click", openPasswordModal);
-    if (passwordModal) {
-      passwordModal.addEventListener("click", (e) => {
-        if (e.target.matches("[data-close-pw]")) closePasswordModal();
-      });
-    }
-    if (passwordForm) {
-      passwordForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        pwError.hidden = true;
-        const currentPassword = document.getElementById("pwCurrent").value;
-        const newPassword = document.getElementById("pwNew").value;
-        const newPassword2 = document.getElementById("pwNew2").value;
-        if (newPassword !== newPassword2) {
-          pwError.hidden = false;
-          pwError.textContent = "\uC0C8 \uBE44\uBC00\uBC88\uD638\uAC00 \uC77C\uCE58\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.";
-          return;
-        }
-        try {
-          await SuchupAuth.changePassword(currentPassword, newPassword);
-          closePasswordModal();
-          alert("\uBE44\uBC00\uBC88\uD638\uAC00 \uBCC0\uACBD\uB418\uC5C8\uC2B5\uB2C8\uB2E4.");
-        } catch (err) {
-          pwError.hidden = false;
-          pwError.textContent = err.message || "\uBE44\uBC00\uBC88\uD638 \uBCC0\uACBD\uC5D0 \uC2E4\uD328\uD588\uC2B5\uB2C8\uB2E4.";
-        }
-      });
-    }
-
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        setDrawerOpen(false);
-        closePasswordModal();
-      }
+      if (e.key === "Escape") setDrawerOpen(false);
     });
   }
 

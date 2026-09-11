@@ -14,7 +14,7 @@
   <div class="app">
     <header class="header">
       <div class="brand">
-        <img class="brand__logo" src="assets/korva-logo.gif" alt="" width="40" height="40" />
+        <img class="brand__logo" src="assets/korva-logo.gif" alt="대한민국재향군인회" width="40" height="40" />
         <div class="brand__text">
           <span class="brand__name">수첩</span>
           <span class="brand__sub">대한민국재향군인회</span>
@@ -29,12 +29,19 @@
 
     <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
     <aside class="drawer" id="drawer" aria-hidden="true">
+      <div class="drawer__account" id="drawerAccount">
+        <p class="drawer__account-name" id="drawerUserName">—</p>
+        <p class="drawer__account-role" id="drawerUserRole">사용자</p>
+      </div>
       <p class="drawer__title">메뉴</p>
       <nav class="drawer__nav">
         <a href="index.html" class="drawer__link is-active">연락처</a>
-        <a href="admin.html" class="drawer__link">관리자</a>
-        <button type="button" class="drawer__link drawer__link--btn" id="passwordBtn">비밀번호 변경</button>
-        <button type="button" class="drawer__link drawer__link--btn" id="logoutBtn">로그아웃</button>
+        <a href="admin.html" class="drawer__link" id="adminLink" hidden>관리자</a>
+      </nav>
+      <p class="drawer__title">계정</p>
+      <nav class="drawer__nav">
+        <a href="password.html" class="drawer__link">비밀번호 변경</a>
+        <button type="button" class="drawer__link drawer__link--btn drawer__link--danger" id="logoutBtn">로그아웃</button>
       </nav>
     </aside>
 
@@ -94,22 +101,9 @@
     </main>
   </div>
 
-  <div class="modal" id="passwordModal" hidden>
-    <div class="modal__backdrop" data-close-pw></div>
-    <form class="modal__card" id="passwordForm">
-      <h2>비밀번호 변경</h2>
-      <label class="field"><span>현재 비밀번호</span><input type="password" id="pwCurrent" required autocomplete="current-password" /></label>
-      <label class="field"><span>새 비밀번호</span><input type="password" id="pwNew" required autocomplete="new-password" minlength="4" /></label>
-      <label class="field"><span>새 비밀번호 확인</span><input type="password" id="pwNew2" required autocomplete="new-password" minlength="4" /></label>
-      <p class="form-error" id="pwError" hidden></p>
-      <div class="modal__actions">
-        <button type="button" class="ghost-btn" data-close-pw>취소</button>
-        <button type="submit" class="primary-btn" id="pwSaveBtn">변경</button>
-      </div>
-    </form>
-  </div>
-
   <script src="js/auth.js" charset="utf-8"></script>
+  <script src="js/org-data.js" charset="utf-8"></script>
+  <script src="js/org.js" charset="utf-8"></script>
   <script src="js/sort.js" charset="utf-8"></script>
   <script src="js/app.js" charset="utf-8"></script>
 </body>

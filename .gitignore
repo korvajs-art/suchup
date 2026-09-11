@@ -11,3 +11,6 @@ data/
 *.trace.db
 .idea/
 .vscode/
+
+# 실명·연락처가 담긴 대의원 명부는 저장소에 올리지 않는다.
+seed-delegates.sql

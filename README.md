@@ -7,7 +7,9 @@
 | Cloudflare | 이 폴더 루트 | 인터넷 서비스, Git 자동 배포 |
 | eGov Boot | `egov-suchup/` | 로컬/내부망 JAR 실행 |
 
-기본 계정: `admin` / `changeme` (운영 환경에서 반드시 변경)
+기본 계정 (운영 환경에서 반드시 변경):
+- 일반 사용자: `suchup` / `suchup` (수첩 조회)
+- 관리자: `admin` / `changeme` (수첩 + 연락처 관리)
 
 ---
 

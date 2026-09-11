@@ -1,18 +1,20 @@
 import { hashPassword } from "./crypto.js";
 
+// DB 가 비어 있을 때만 들어가는 예시값. 실제 대의원 명부는 seed-delegates.sql 로 넣는다.
+// 소속·시군구·직위는 org-data.js 의 조직 체계를 따르고, 성명·연락처는 가짜다.
 const DEFAULT_CONTACTS = [
-  ["\uAE40\uBBFC\uC218", "\uC11C\uC6B8", "\uBCF8\uBD80", "\uD68C\uC7A5", "010-1234-5678", "minsu.kim@example.com", "", "", "\uC721\uAD70", "\uB300\uB839", "", "", "", "\uC11C\uC6B8\uD2B9\uBCC4\uC2DC \uC911\uAD6C \uC138\uC885\uB300\uB85C 110", ""],
-  ["\uC774\uC11C\uC5F0", "\uC11C\uC6B8", "\uC0AC\uBB34\uAD6D", "\uC0AC\uBB34\uAD6D\uC7A5", "010-2345-6789", "seoyeon.lee@example.com", "", "", "", "", "", "", "", "\uC11C\uC6B8\uD2B9\uBCC4\uC2DC \uC885\uB85C\uAD6C \uC885\uB85C 1", ""],
-  ["\uBC15\uC900\uD638", "\uACBD\uAE30", "\uACBD\uAE30\uB3C4\uD68C", "\uD68C\uC7A5", "010-3456-7890", "junho.park@example.com", "", "", "\uC721\uAD70", "\uC911\uB839", "", "", "", "\uACBD\uAE30\uB3C4 \uC218\uC6D0\uC2DC \uC601\uD1B5\uAD6C \uAD11\uAD50\uB85C 209", ""],
-  ["\uCD5C\uC720\uC9C4", "\uACBD\uAE30", "\uACBD\uAE30\uB3C4\uD68C", "\uBD80\uD68C\uC7A5", "010-4567-8901", "yujin.choi@example.com", "", "", "", "", "", "", "", "", ""],
-  ["\uC815\uC778\uADDC", "\uACBD\uB0A8", "\uACBD\uB0A8\uB3C4\uD68C", "\uD68C\uC7A5", "010-4566-3080", "ingyu.jung@example.com", "2020-01-01", "1960-01-01", "\uC721\uAD70", "\uB300\uB839", "", "", "", "\uACBD\uC0C1\uB0A8\uB3C4 \uCC3D\uC6D0\uC2DC \uC758\uCC3D\uAD6C \uC911\uC559\uB300\uB85C 151", ""],
-  ["\uD55C\uB3D9\uC6B1", "\uACBD\uB0A8", "\uACBD\uB0A8\uB3C4\uD68C", "\uC721\uAD70\uBD80\uD68C\uC7A5", "010-3215-9949", "dongwook.han@example.com", "", "", "\uC721\uAD70", "", "", "", "", "", ""],
-  ["\uC624\uD558\uB298", "\uBD80\uC0B0", "\uBD80\uC0B0\uC2DC\uD68C", "\uD68C\uC7A5", "010-5678-9012", "haneul.oh@example.com", "", "", "", "", "", "", "", "\uBD80\uC0B0\uAD11\uC5ED\uC2DC \uC5F0\uC81C\uAD6C \uC911\uC559\uB300\uB85C 1001", ""],
-  ["\uC724\uC7AC\uC11D", "\uBD80\uC0B0", "\uBD80\uC0B0\uC2DC\uD68C", "\uCD1D\uBB34", "010-6789-0123", "jaeseok.yoon@example.com", "", "", "", "", "", "", "", "", ""],
-  ["\uAC15\uBBF8\uB77C", "\uB300\uC804", "\uC0AC\uBB34\uAD6D", "\uACFC\uC7A5", "010-7890-1234", "mira.kang@example.com", "", "", "", "", "", "", "", "\uB300\uC804\uAD11\uC5ED\uC2DC \uC11C\uAD6C \uB454\uC0B0\uB85C 100", ""],
-  ["\uC870\uD604\uC6B0", "\uB300\uAD6C", "\uB300\uAD6C\uC2DC\uD68C", "\uBD80\uD68C\uC7A5", "010-8901-2345", "hyunwoo.cho@example.com", "", "", "", "", "", "", "", "", ""],
-  ["\uC2E0\uC608\uB9B0", "\uC778\uCC9C", "\uC778\uCC9C\uC2DC\uD68C", "\uCD1D\uBB34", "010-9012-3456", "yerin.shin@example.com", "", "", "", "", "", "", "", "\uC778\uCC9C\uAD11\uC5ED\uC2DC \uB0A8\uB3D9\uAD6C \uC608\uC220\uB85C 178", ""],
-  ["\uC784\uC131\uD638", "\uAD11\uC8FC", "\uAD11\uC8FC\uC2DC\uD68C", "\uD68C\uC7A5", "010-0123-4567", "seongho.lim@example.com", "", "", "", "", "", "", "", "", ""],
+  ["김민수", "본부", "본부", "회장", "010-1234-5678", "", "", "", "육군", "대령", "3사6", "", "", "", ""],
+  ["이서연", "본부", "본부", "육군부회장", "010-2345-6789", "", "", "", "육군", "중장", "육사31", "", "", "", ""],
+  ["박태준", "본부", "본부", "사무총장", "010-2345-1102", "", "", "", "육군", "중장", "육사41", "", "", "", ""],
+  ["정하윤", "본부", "군직능대표", "직능대표", "010-2345-2101", "", "", "", "해군", "준장", "해사41", "", "", "", ""],
+  ["임성호", "서울", "시회", "회장", "010-0123-4567", "", "", "", "육군", "소장", "3사9", "", "", "", ""],
+  ["최수빈", "서울", "강남", "회장", "010-3456-2201", "", "", "", "육군", "중령", "학군21", "", "", "", ""],
+  ["윤재석", "부산", "시회", "회장", "010-6789-0123", "", "", "", "해군", "대령", "해사30", "", "", "", ""],
+  ["박준호", "경기", "도회", "회장", "010-3456-7890", "", "", "", "육군", "중령", "3사18", "", "", "", ""],
+  ["문지호", "대전충남", "도회", "회장", "010-4210-3300", "", "", "", "육군", "소령", "기행2", "", "", "", ""],
+  ["정인규", "경남", "도회", "회장", "010-4566-3080", "", "", "", "육군", "대령", "3사14", "", "", "", ""],
+  ["방승일", "해외", "미동부", "회장", "002-6140-173-3265", "", "", "", "육군", "중위", "기행7", "", "", "", ""],
+  ["공석", "업체", "향군타워", "대표이사", "", "", "", "", "", "", "", "", "", "", ""],
 ];
 
 const EXTRA_COLUMNS = [
@@ -30,11 +32,36 @@ const ADMIN_SALT = "0123456789abcdef0123456789abcdef";
 
 let readyPromise = null;
 
-async function addColumnIfMissing(db, column) {
+async function addColumnIfMissing(db, table, column, ddl) {
   try {
-    await db.prepare(`ALTER TABLE contacts ADD COLUMN ${column} TEXT NOT NULL DEFAULT ''`).run();
+    await db.prepare(`ALTER TABLE ${table} ADD COLUMN ${column} ${ddl}`).run();
   } catch (_) {
     /* column already exists */
+  }
+}
+
+async function ensureUser(db, username, password, role) {
+  const existing = await db.prepare("SELECT id, role FROM admins WHERE username = ?").bind(username).first();
+  if (existing) {
+    if (existing.role !== role) {
+      await db.prepare("UPDATE admins SET role = ? WHERE id = ?").bind(role, existing.id).run();
+    }
+    return;
+  }
+  const hash = await hashPassword(password, ADMIN_SALT);
+  try {
+    await db.prepare(
+      "INSERT INTO admins (username, password_hash, salt, role) VALUES (?, ?, ?, ?)"
+    )
+      .bind(username, hash, ADMIN_SALT, role)
+      .run();
+  } catch (_) {
+    await db.prepare(
+      "INSERT INTO admins (username, password_hash, salt) VALUES (?, ?, ?)"
+    )
+      .bind(username, hash, ADMIN_SALT)
+      .run();
+    await db.prepare("UPDATE admins SET role = ? WHERE username = ?").bind(role, username).run();
   }
 }
 
@@ -48,6 +75,7 @@ export async function ensureSchema(env) {
           username TEXT NOT NULL UNIQUE,
           password_hash TEXT NOT NULL,
           salt TEXT NOT NULL,
+          role TEXT NOT NULL DEFAULT 'user',
           created_at TEXT NOT NULL DEFAULT (datetime('now'))
         )`),
         env.DB.prepare(`CREATE TABLE IF NOT EXISTS sessions (
@@ -81,18 +109,12 @@ export async function ensureSchema(env) {
       ]);
 
       for (const col of EXTRA_COLUMNS) {
-        await addColumnIfMissing(env.DB, col);
+        await addColumnIfMissing(env.DB, "contacts", col, "TEXT NOT NULL DEFAULT ''");
       }
+      await addColumnIfMissing(env.DB, "admins", "role", "TEXT NOT NULL DEFAULT 'user'");
 
-      const adminCount = await env.DB.prepare("SELECT COUNT(*) AS c FROM admins").first();
-      if (!adminCount || Number(adminCount.c) === 0) {
-        const hash = await hashPassword("changeme", ADMIN_SALT);
-        await env.DB.prepare(
-          "INSERT INTO admins (username, password_hash, salt) VALUES (?, ?, ?)"
-        )
-          .bind("admin", hash, ADMIN_SALT)
-          .run();
-      }
+      await ensureUser(env.DB, "admin", "changeme", "admin");
+      await ensureUser(env.DB, "suchup", "suchup", "user");
 
       const contactCount = await env.DB.prepare("SELECT COUNT(*) AS c FROM contacts").first();
       if (!contactCount || Number(contactCount.c) === 0) {

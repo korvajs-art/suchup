@@ -1,5 +1,5 @@
 import { json, error, readJson } from "../_lib/response.js";
-import { requireAdmin } from "../_lib/auth.js";
+import { requireAdmin, requireAdminRole } from "../_lib/auth.js";
 import { ensureSchema } from "../_lib/db.js";
 import {
   CONTACT_COLUMNS,
@@ -17,6 +17,7 @@ export async function onRequestGet(context) {
   const admin = await requireAdmin(env, request);
   if (!admin) return error("Unauthorized", 401);
 
+  // list: any logged-in user
   const { results } = await env.DB.prepare(
     `SELECT ${CONTACT_COLUMNS}
      FROM contacts`
@@ -31,8 +32,8 @@ export async function onRequestPost(context) {
   if (!env.DB) return error("Database binding missing", 500);
   await ensureSchema(env);
 
-  const admin = await requireAdmin(env, request);
-  if (!admin) return error("Unauthorized", 401);
+  const admin = await requireAdminRole(env, request);
+  if (!admin) return error("Forbidden", 403);
 
   const body = await readJson(request);
   if (!body) return error("Invalid JSON body", 400);

@@ -61,14 +61,18 @@ export async function destroySession(env, request) {
   }
 }
 
-export async function requireAdmin(env, request) {
+function normalizeRole(role) {
+  return role === "admin" ? "admin" : "user";
+}
+
+export async function requireUser(env, request) {
   const cookies = parseCookies(request.headers.get("Cookie"));
   const token = cookies[COOKIE_NAME];
   if (!token) return null;
 
   const tokenHash = await sha256Hex(token);
   const row = await env.DB.prepare(
-    `SELECT s.id AS session_id, s.expires_at, a.id AS admin_id, a.username
+    `SELECT s.id AS session_id, s.expires_at, a.id AS admin_id, a.username, a.role
      FROM sessions s
      JOIN admins a ON a.id = s.admin_id
      WHERE s.token_hash = ?`
@@ -82,7 +86,23 @@ export async function requireAdmin(env, request) {
     return null;
   }
 
-  return { id: row.admin_id, username: row.username };
+  return {
+    id: row.admin_id,
+    username: row.username,
+    role: normalizeRole(row.role),
+  };
+}
+
+/** Any authenticated account (viewer or admin). */
+export async function requireAdmin(env, request) {
+  return requireUser(env, request);
+}
+
+/** Admin role only. */
+export async function requireAdminRole(env, request) {
+  const user = await requireUser(env, request);
+  if (!user || user.role !== "admin") return null;
+  return user;
 }
 
 export async function cleanupExpiredSessions(env) {

@@ -9,19 +9,19 @@ export async function onRequestPost(context) {
   await ensureSchema(env);
 
   const admin = await requireAdmin(env, request);
-  if (!admin) return error("Unauthorized", 401);
+  if (!admin) return error("로그인이 필요합니다.", 401);
 
   const body = await readJson(request);
-  if (!body) return error("Invalid JSON body", 400);
+  if (!body) return error("잘못된 요청입니다.", 400);
 
   const currentPassword = String(body.currentPassword || "");
   const newPassword = String(body.newPassword || "");
 
   if (!currentPassword || !newPassword) {
-    return error("currentPassword and newPassword are required", 400);
+    return error("비밀번호를 모두 입력해 주세요.", 400);
   }
   if (newPassword.length < 4) {
-    return error("new password must be at least 4 characters", 400);
+    return error("새 비밀번호는 4자 이상이어야 합니다.", 400);
   }
 
   const row = await env.DB.prepare(
@@ -30,10 +30,10 @@ export async function onRequestPost(context) {
     .bind(admin.id)
     .first();
 
-  if (!row) return error("Admin not found", 404);
+  if (!row) return error("계정을 찾을 수 없습니다.", 404);
 
   const ok = await verifyPassword(currentPassword, row.salt, row.password_hash);
-  if (!ok) return error("Current password is incorrect", 401);
+  if (!ok) return error("현재 비밀번호가 올바르지 않습니다.", 401);
 
   const salt = createSalt();
   const passwordHash = await hashPassword(newPassword, salt);

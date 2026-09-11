@@ -1,5 +1,5 @@
 import { json, error, readJson } from "../../_lib/response.js";
-import { requireAdmin } from "../../_lib/auth.js";
+import { requireAdminRole } from "../../_lib/auth.js";
 import { ensureSchema } from "../../_lib/db.js";
 import {
   CONTACT_COLUMNS,
@@ -13,8 +13,8 @@ export async function onRequestPut(context) {
   if (!env.DB) return error("Database binding missing", 500);
   await ensureSchema(env);
 
-  const admin = await requireAdmin(env, request);
-  if (!admin) return error("Unauthorized", 401);
+  const admin = await requireAdminRole(env, request);
+  if (!admin) return error("Forbidden", 403);
 
   const id = Number(params.id);
   if (!Number.isFinite(id)) return error("Invalid id", 400);
@@ -51,8 +51,8 @@ export async function onRequestDelete(context) {
   if (!env.DB) return error("Database binding missing", 500);
   await ensureSchema(env);
 
-  const admin = await requireAdmin(env, request);
-  if (!admin) return error("Unauthorized", 401);
+  const admin = await requireAdminRole(env, request);
+  if (!admin) return error("Forbidden", 403);
 
   const id = Number(params.id);
   if (!Number.isFinite(id)) return error("Invalid id", 400);
