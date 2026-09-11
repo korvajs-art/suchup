@@ -36,6 +36,8 @@ CREATE TABLE IF NOT EXISTS contacts (
   address TEXT NOT NULL DEFAULT '',
   remark TEXT NOT NULL DEFAULT '',
   avatar TEXT NOT NULL DEFAULT '',
+  -- 업로드한 명부의 행 순서. 0 이면 미지정.
+  sort_order INTEGER NOT NULL DEFAULT 0,
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );

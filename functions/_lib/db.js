@@ -103,6 +103,7 @@ export async function ensureSchema(env) {
           address TEXT NOT NULL DEFAULT '',
           remark TEXT NOT NULL DEFAULT '',
           avatar TEXT NOT NULL DEFAULT '',
+          sort_order INTEGER NOT NULL DEFAULT 0,
           created_at TEXT NOT NULL DEFAULT (datetime('now')),
           updated_at TEXT NOT NULL DEFAULT (datetime('now'))
         )`),
@@ -111,6 +112,7 @@ export async function ensureSchema(env) {
       for (const col of EXTRA_COLUMNS) {
         await addColumnIfMissing(env.DB, "contacts", col, "TEXT NOT NULL DEFAULT ''");
       }
+      await addColumnIfMissing(env.DB, "contacts", "sort_order", "INTEGER NOT NULL DEFAULT 0");
       await addColumnIfMissing(env.DB, "admins", "role", "TEXT NOT NULL DEFAULT 'user'");
 
       await ensureUser(env.DB, "admin", "changeme", "admin");
@@ -118,11 +120,11 @@ export async function ensureSchema(env) {
 
       const contactCount = await env.DB.prepare("SELECT COUNT(*) AS c FROM contacts").first();
       if (!contactCount || Number(contactCount.c) === 0) {
-        const stmts = DEFAULT_CONTACTS.map((c) =>
+        const stmts = DEFAULT_CONTACTS.map((c, i) =>
           env.DB.prepare(
-            `INSERT INTO contacts (name, region, dept, position, phone, email, appoint_date, birth_date, military_branch, military_rank, commission, commission_type, class_no, address, remark)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-          ).bind(...c)
+            `INSERT INTO contacts (name, region, dept, position, phone, email, appoint_date, birth_date, military_branch, military_rank, commission, commission_type, class_no, address, remark, sort_order)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+          ).bind(...c, i + 1)
         );
         await env.DB.batch(stmts);
       }

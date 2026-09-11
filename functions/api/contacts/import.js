@@ -31,13 +31,15 @@ export async function onRequestPost(context) {
     if (d && !byPhone.has(d)) byPhone.set(d, row.id);
   }
 
-  for (const item of body.contacts) {
+  for (const [index, item] of body.contacts.entries()) {
     const c = normalizeContact(item || {});
     if (!c.name) {
       skipped += 1;
       continue;
     }
 
+    // 업로드한 파일의 행 순서를 그대로 정렬 순서로 쓴다.
+    const sortOrder = c.sortOrder || index + 1;
     const digits = phoneDigits(c.phone);
     const existingId = digits ? byPhone.get(digits) : null;
 
@@ -47,18 +49,18 @@ export async function onRequestPost(context) {
          SET name = ?, region = ?, dept = ?, position = ?, phone = ?, email = ?,
              appoint_date = ?, birth_date = ?, military_branch = ?, military_rank = ?,
              commission = ?, commission_type = ?, class_no = ?, address = ?, remark = ?, avatar = ?,
-             updated_at = datetime('now')
+             sort_order = ?, updated_at = datetime('now')
          WHERE id = ?`
       )
-        .bind(...bindContactValues(c), existingId)
+        .bind(...bindContactValues(c), sortOrder, existingId)
         .run();
       updated += 1;
     } else {
       const result = await env.DB.prepare(
-        `INSERT INTO contacts (name, region, dept, position, phone, email, appoint_date, birth_date, military_branch, military_rank, commission, commission_type, class_no, address, remark, avatar)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        `INSERT INTO contacts (name, region, dept, position, phone, email, appoint_date, birth_date, military_branch, military_rank, commission, commission_type, class_no, address, remark, avatar, sort_order)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
       )
-        .bind(...bindContactValues(c))
+        .bind(...bindContactValues(c), sortOrder)
         .run();
       if (digits && result.meta.last_row_id) {
         byPhone.set(digits, result.meta.last_row_id);

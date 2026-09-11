@@ -1,5 +1,5 @@
 export const CONTACT_COLUMNS =
-  "id, name, region, dept, position, phone, email, appoint_date, birth_date, military_branch, military_rank, commission, commission_type, class_no, address, remark, avatar";
+  "id, name, region, dept, position, phone, email, appoint_date, birth_date, military_branch, military_rank, commission, commission_type, class_no, address, remark, avatar, sort_order";
 
 export function phoneDigits(phone) {
   return String(phone || "").replace(/\D/g, "");
@@ -24,6 +24,7 @@ export function mapContact(row) {
     address: row.address || "",
     remark: row.remark || "",
     avatar: row.avatar || "",
+    sortOrder: Number(row.sort_order) || 0,
   };
 }
 
@@ -45,8 +46,12 @@ export function normalizeContact(body) {
     address: String(body.address || "").trim(),
     remark: String(body.remark || "").trim(),
     avatar: String(body.avatar || "").trim(),
+    sortOrder: Number(body.sortOrder || body.sort_order || 0) || 0,
   };
 }
+
+// sort_order 는 일괄등록에서만 다루므로 bindContactValues 에는 넣지 않는다.
+// 관리자가 연락처를 수정해도 원래 명부 순서가 그대로 유지된다.
 
 export function bindContactValues(c) {
   return [
