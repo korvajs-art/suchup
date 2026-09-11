@@ -10,6 +10,5 @@ database_name = "suchup"
 database_id = "9f002233-afe4-4d33-acac-d7cb3c5a1484"
 preview_database_id = "9f002233-afe4-4d33-acac-d7cb3c5a1484"
 
-[vars]
-# Override in Cloudflare Pages project settings for production
-SESSION_SECRET = "dev-session-secret-change-me"
+# Sessions use random HttpOnly cookies (hashed in D1). No shared secret in repo.
+# Set production secrets only in Cloudflare Pages → Settings → Environment variables.

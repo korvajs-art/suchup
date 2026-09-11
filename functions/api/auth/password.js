@@ -2,6 +2,7 @@ import { verifyPassword, hashPassword, createSalt } from "../../_lib/crypto.js";
 import { requireAdmin } from "../../_lib/auth.js";
 import { json, error, readJson } from "../../_lib/response.js";
 import { ensureSchema } from "../../_lib/db.js";
+import { FIELD_LIMITS } from "../../_lib/security.js";
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -14,14 +15,20 @@ export async function onRequestPost(context) {
   const body = await readJson(request);
   if (!body) return error("잘못된 요청입니다.", 400);
 
-  const currentPassword = String(body.currentPassword || "");
-  const newPassword = String(body.newPassword || "");
+  const currentPassword = String(body.currentPassword || "").slice(0, FIELD_LIMITS.password);
+  const newPassword = String(body.newPassword || "").slice(0, FIELD_LIMITS.password);
 
   if (!currentPassword || !newPassword) {
     return error("비밀번호를 모두 입력해 주세요.", 400);
   }
-  if (newPassword.length < 4) {
-    return error("새 비밀번호는 4자 이상이어야 합니다.", 400);
+  if (newPassword.length < 8) {
+    return error("새 비밀번호는 8자 이상이어야 합니다.", 400);
+  }
+  if (newPassword.length > FIELD_LIMITS.password) {
+    return error("새 비밀번호가 너무 깁니다.", 400);
+  }
+  if (newPassword === currentPassword) {
+    return error("새 비밀번호는 현재 비밀번호와 달라야 합니다.", 400);
   }
 
   const row = await env.DB.prepare(
@@ -41,6 +48,9 @@ export async function onRequestPost(context) {
   await env.DB.prepare("UPDATE admins SET password_hash = ?, salt = ? WHERE id = ?")
     .bind(passwordHash, salt, admin.id)
     .run();
+
+  // 비밀번호 변경 후 다른 세션을 모두 끊어 탈취된 세션을 무효화한다 (A07).
+  await env.DB.prepare("DELETE FROM sessions WHERE admin_id = ?").bind(admin.id).run();
 
   return json({ ok: true });
 }

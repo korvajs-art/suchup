@@ -12,6 +12,7 @@
   const pwNew2 = document.getElementById("pwNew2");
   const fromAdmin = new URLSearchParams(location.search).get("from") === "admin";
   const home = fromAdmin ? "admin.html" : "index.html";
+  const MIN_PW = 8;
 
   const backLink = document.getElementById("backLink");
   const cancelLink = document.getElementById("cancelLink");
@@ -37,26 +38,24 @@
   function updateHints() {
     const next = pwNew.value;
     const confirm = pwNew2.value;
-    lengthHint.classList.toggle("is-ok", next.length >= 4);
-    lengthHint.classList.toggle("is-bad", next.length > 0 && next.length < 4);
+    lengthHint.classList.toggle("is-ok", next.length >= MIN_PW);
+    lengthHint.classList.toggle("is-bad", next.length > 0 && next.length < MIN_PW);
     lengthHint.textContent =
       next.length === 0
-        ? "\u0034\uC790 \uC774\uC0C1 \uC785\uB825\uD574 \uC8FC\uC138\uC694."
-        : next.length < 4
-          ? `${4 - next.length}\uC790 \uB354 \uC785\uB825\uD574 \uC8FC\uC138\uC694.`
-          : "\uC0AC\uC6A9 \uAC00\uB2A5\uD55C \uAE38\uC774\uC785\uB2C8\uB2E4.";
+        ? "8자 이상 입력해 주세요."
+        : next.length < MIN_PW
+          ? `${MIN_PW - next.length}자 더 입력해 주세요.`
+          : "사용 가능한 길이입니다.";
 
     if (!confirm) {
       matchHint.hidden = true;
       return;
     }
     matchHint.hidden = false;
-    const ok = next === confirm && next.length >= 4;
+    const ok = next === confirm && next.length >= MIN_PW;
     matchHint.classList.toggle("is-ok", ok);
     matchHint.classList.toggle("is-bad", !ok);
-    matchHint.textContent = ok
-      ? "\uBE44\uBC00\uBC88\uD638\uAC00 \uC77C\uCE58\uD569\uB2C8\uB2E4."
-      : "\uBE44\uBC00\uBC88\uD638\uAC00 \uC77C\uCE58\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.";
+    matchHint.textContent = ok ? "비밀번호가 일치합니다." : "비밀번호가 일치하지 않습니다.";
   }
 
   document.querySelectorAll(".pw-toggle").forEach((toggle) => {
@@ -65,11 +64,8 @@
       if (!input) return;
       const show = input.type === "password";
       input.type = show ? "text" : "password";
-      toggle.textContent = show ? "\uC228\uAE40" : "\uBCF4\uAE30";
-      toggle.setAttribute(
-        "aria-label",
-        show ? "\uBE44\uBC00\uBC88\uD638 \uC228\uAE30\uAE30" : "\uBE44\uBC00\uBC88\uD638 \uD45C\uC2DC"
-      );
+      toggle.textContent = show ? "숨김" : "보기";
+      toggle.setAttribute("aria-label", show ? "비밀번호 숨기기" : "비밀번호 표시");
     });
   });
 
@@ -83,40 +79,43 @@
     const newPassword = pwNew.value;
     const confirmPassword = pwNew2.value;
 
-    if (newPassword.length < 4) {
-      showError("\uC0C8 \uBE44\uBC00\uBC88\uD638\uB294 4\uC790 \uC774\uC0C1\uC774\uC5B4\uC57C \uD569\uB2C8\uB2E4.");
+    if (newPassword.length < MIN_PW) {
+      showError("새 비밀번호는 8자 이상이어야 합니다.");
       pwNew.focus();
       return;
     }
     if (newPassword !== confirmPassword) {
-      showError("\uC0C8 \uBE44\uBC00\uBC88\uD638\uAC00 \uC77C\uCE58\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.");
+      showError("새 비밀번호가 일치하지 않습니다.");
       pwNew2.focus();
       return;
     }
     if (newPassword === currentPassword) {
-      showError(
-        "\uD604\uC7AC \uBE44\uBC00\uBC88\uD638\uC640 \uB2E4\uB978 \uBE44\uBC00\uBC88\uD638\uB97C \uC785\uB825\uD574 \uC8FC\uC138\uC694."
-      );
+      showError("현재 비밀번호와 다른 비밀번호를 입력해 주세요.");
       pwNew.focus();
       return;
     }
 
     btn.disabled = true;
-    btn.textContent = "\uBCC0\uACBD \uC911...";
+    btn.textContent = "변경 중...";
     try {
       await SuchupAuth.changePassword(currentPassword, newPassword);
+      try {
+        await SuchupAuth.logout();
+      } catch {
+        /* 서버에서 세션이 이미 삭제됐을 수 있다 */
+      }
       successEl.hidden = false;
       form.reset();
       updateHints();
-      showToast("\uBE44\uBC00\uBC88\uD638\uAC00 \uBCC0\uACBD\uB418\uC5C8\uC2B5\uB2C8\uB2E4.");
+      showToast("비밀번호가 변경되었습니다. 다시 로그인해 주세요.");
       setTimeout(() => {
-        location.href = home;
+        location.href = "login.html";
       }, 900);
     } catch (err) {
-      showError(err.message || "\uBE44\uBC00\uBC88\uD638 \uBCC0\uACBD\uC5D0 \uC2E4\uD328\uD588\uC2B5\uB2C8\uB2E4.");
+      showError(err.message || "비밀번호 변경에 실패했습니다.");
     } finally {
       btn.disabled = false;
-      btn.textContent = "\uBCC0\uACBD\uD558\uAE30";
+      btn.textContent = "변경하기";
     }
   });
 
@@ -126,9 +125,8 @@
         location.replace("login.html");
         return;
       }
-      const role =
-        me.admin?.role === "admin" ? "\uAD00\uB9AC\uC790" : "\uC77C\uBC18 \uC0AC\uC6A9\uC790";
-      accountLabel.textContent = `\uBE44\uBC00\uBC88\uD638 \uBCC0\uACBD \u00B7 ${me.admin?.username || role}`;
+      const role = me.admin?.role === "admin" ? "관리자" : "일반 사용자";
+      accountLabel.textContent = `비밀번호 변경 · ${me.admin?.username || role}`;
       pwCurrent.focus();
     })
     .catch(() => location.replace("login.html"));

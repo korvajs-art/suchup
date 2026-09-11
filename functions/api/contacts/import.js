@@ -6,6 +6,7 @@ import {
   bindContactValues,
   phoneDigits,
 } from "../../_lib/contacts.js";
+import { IMPORT_MAX_ROWS } from "../../_lib/security.js";
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -18,6 +19,9 @@ export async function onRequestPost(context) {
   const body = await readJson(request);
   if (!body || !Array.isArray(body.contacts)) {
     return error("contacts array is required", 400);
+  }
+  if (body.contacts.length > IMPORT_MAX_ROWS) {
+    return error(`한 번에 ${IMPORT_MAX_ROWS}건까지만 가져올 수 있습니다.`, 400);
   }
 
   let inserted = 0;

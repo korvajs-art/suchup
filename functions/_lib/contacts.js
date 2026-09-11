@@ -1,3 +1,5 @@
+import { clampText, sanitizeAvatar, FIELD_LIMITS } from "./security.js";
+
 export const CONTACT_COLUMNS =
   "id, name, region, dept, position, phone, email, appoint_date, birth_date, military_branch, military_rank, commission, commission_type, class_no, address, remark, avatar, sort_order";
 
@@ -30,23 +32,29 @@ export function mapContact(row) {
 
 export function normalizeContact(body) {
   return {
-    name: String(body.name || "").trim(),
-    region: String(body.region || "").trim(),
-    dept: String(body.dept || "").trim(),
-    position: String(body.position || "").trim(),
-    phone: String(body.phone || "").trim(),
-    email: String(body.email || "").trim(),
-    appointDate: String(body.appointDate || body.appoint_date || "").trim(),
-    birthDate: String(body.birthDate || body.birth_date || "").trim(),
-    militaryBranch: String(body.militaryBranch || body.military_branch || "").trim(),
-    militaryRank: String(body.militaryRank || body.military_rank || "").trim(),
-    commission: String(body.commission || "").trim(),
-    commissionType: String(body.commissionType || body.commission_type || "").trim(),
-    classNo: String(body.classNo || body.class_no || "").trim(),
-    address: String(body.address || "").trim(),
-    remark: String(body.remark || "").trim(),
-    avatar: String(body.avatar || "").trim(),
-    sortOrder: Number(body.sortOrder || body.sort_order || 0) || 0,
+    name: clampText(body.name, FIELD_LIMITS.name),
+    region: clampText(body.region, FIELD_LIMITS.region),
+    dept: clampText(body.dept, FIELD_LIMITS.dept),
+    position: clampText(body.position, FIELD_LIMITS.position),
+    phone: clampText(body.phone, FIELD_LIMITS.phone),
+    email: clampText(body.email, FIELD_LIMITS.email),
+    appointDate: clampText(body.appointDate || body.appoint_date, FIELD_LIMITS.appointDate),
+    birthDate: clampText(body.birthDate || body.birth_date, FIELD_LIMITS.birthDate),
+    militaryBranch: clampText(
+      body.militaryBranch || body.military_branch,
+      FIELD_LIMITS.militaryBranch
+    ),
+    militaryRank: clampText(body.militaryRank || body.military_rank, FIELD_LIMITS.militaryRank),
+    commission: clampText(body.commission, FIELD_LIMITS.commission),
+    commissionType: clampText(
+      body.commissionType || body.commission_type,
+      FIELD_LIMITS.commissionType
+    ),
+    classNo: clampText(body.classNo || body.class_no, FIELD_LIMITS.classNo),
+    address: clampText(body.address, FIELD_LIMITS.address),
+    remark: clampText(body.remark, FIELD_LIMITS.remark),
+    avatar: sanitizeAvatar(body.avatar),
+    sortOrder: Math.min(Math.max(Number(body.sortOrder || body.sort_order || 0) || 0, 0), 1_000_000),
   };
 }
 
