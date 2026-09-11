@@ -2,8 +2,7 @@
   const VACANT = "공석";
   const SEARCH_DELAY = 140;
 
-  // 이름·직위·시군구·연락처는 줄에 이미 보이므로 상세에서는 빼고 나머지만 보여 준다.
-  // 임관과 기수는 반드시 두 줄로 나눈다. 명부에 "육사30"처럼 붙어 있으면 여기서 푼다.
+  // 목록 카드에 이미 보이는 항목은 상세에서 빼고, 임관/기수는 분리해 보여 준다.
   const DETAIL_FIELDS = [
     ["선임일", "appointDate"],
     ["생년월일", "birthDate"],
@@ -23,18 +22,9 @@
   const els = {
     searchInput: document.getElementById("searchInput"),
     searchClear: document.getElementById("searchClear"),
-    filterBtn: document.getElementById("filterBtn"),
-    filterBadge: document.getElementById("filterBadge"),
-    filterSheet: document.getElementById("filterSheet"),
-    filterReset: document.getElementById("filterReset"),
-    filterApply: document.getElementById("filterApply"),
-    regionPicker: document.getElementById("regionPicker"),
-    regionPickerName: document.getElementById("regionPickerName"),
-    regionPickerCount: document.getElementById("regionPickerCount"),
-    regionSheet: document.getElementById("regionSheet"),
-    regionList: document.getElementById("regionList"),
-    positionChips: document.getElementById("positionChips"),
+    regionFilter: document.getElementById("regionFilter"),
     deptFilter: document.getElementById("deptFilter"),
+    positionFilter: document.getElementById("positionFilter"),
     hideVacant: document.getElementById("hideVacant"),
     contactList: document.getElementById("contactList"),
     resultCount: document.getElementById("resultCount"),
@@ -45,6 +35,13 @@
     menuBtn: document.getElementById("menuBtn"),
     drawer: document.getElementById("drawer"),
     drawerBackdrop: document.getElementById("drawerBackdrop"),
+  };
+
+  const ICON = {
+    phone: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.4 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.9.6 2.8.7A2 2 0 0 1 22 16.9z"/></svg>`,
+    sms: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.5 9.5 9.5 0 0 1-3-.5L3 21l1.5-4a8.4 8.4 0 0 1-.5-3 8.4 8.4 0 0 1 9-8.5 8.4 8.4 0 0 1 8 6z"/></svg>`,
+    card: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="11" r="2.2"/><path d="M5.8 17a3.4 3.4 0 0 1 6.4 0M15 9h4M15 13h4"/></svg>`,
+    caret: `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 16.5 4.5 9h15z"/></svg>`,
   };
 
   function escapeHtml(str) {
@@ -60,7 +57,6 @@
     return String(phone || "").replace(/\D/g, "");
   }
 
-  // 번호가 비어 있어도 사람은 사람이다. 공석은 이름으로만 판단한다.
   function isVacant(contact) {
     return String(contact.name || "").trim() === VACANT;
   }
@@ -69,14 +65,6 @@
     return CONTACTS.find((c) => String(c.id) === String(id));
   }
 
-  /* ── 아이콘 ─────────────────────────────────────────── */
-  const ICON = {
-    phone: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.4 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.9.6 2.8.7A2 2 0 0 1 22 16.9z"/></svg>`,
-    sms: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.5 9.5 9.5 0 0 1-3-.5L3 21l1.5-4a8.4 8.4 0 0 1-.5-3 8.4 8.4 0 0 1 9-8.5 8.4 8.4 0 0 1 8 6z"/></svg>`,
-    card: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="11" r="2.2"/><path d="M5.8 17a3.4 3.4 0 0 1 6.4 0M15 9h4M15 13h4"/></svg>`,
-  };
-
-  /* ── 필터 ───────────────────────────────────────────── */
   function regionsInData() {
     return SuchupSort.uniqueSortedRegions(CONTACTS.map((c) => c.region));
   }
@@ -86,62 +74,37 @@
     return SuchupSort.uniqueSortedDepts(pool.map((c) => c.dept), region);
   }
 
-  function buildRegionChips() {
-    const counts = new Map();
-    CONTACTS.forEach((c) => counts.set(c.region, (counts.get(c.region) || 0) + 1));
-
-    const items = [
-      { region: "", name: "전체", count: CONTACTS.length },
-      ...regionsInData().map((r) => ({ region: r, name: r, count: counts.get(r) || 0 })),
-    ];
-
-    els.regionList.innerHTML = items
-      .map((item) => {
-        const on = filters.region === item.region;
-        return `<button type="button" class="region-option" role="option" data-region="${escapeHtml(item.region)}" aria-selected="${on}">
-          <span class="region-option__name">${escapeHtml(item.name)}</span>
-          <span class="region-option__count">${item.count}명</span>
-          <span class="region-option__mark" aria-hidden="true">${on ? "✓" : ""}</span>
-        </button>`;
-      })
-      .join("");
-
-    const current = items.find((item) => item.region === filters.region) || items[0];
-    els.regionPickerName.textContent = current.name;
-    els.regionPickerCount.textContent = `${current.count}명`;
-  }
-
-  function buildPositionChips() {
-    const list = SuchupSort.uniqueSortedPositions(CONTACTS.map((c) => c.position));
-    els.positionChips.innerHTML = [
-      `<button type="button" class="chip" data-position="" aria-pressed="${filters.position === ""}">전체</button>`,
-      ...list.map(
-        (p) =>
-          `<button type="button" class="chip" data-position="${escapeHtml(p)}" aria-pressed="${filters.position === p}">${escapeHtml(p)}</button>`
+  function fillSelect(select, options, selected, emptyLabel) {
+    select.innerHTML = [
+      `<option value="">${escapeHtml(emptyLabel)}</option>`,
+      ...options.map(
+        (value) =>
+          `<option value="${escapeHtml(value)}"${value === selected ? " selected" : ""}>${escapeHtml(value)}</option>`
       ),
     ].join("");
   }
 
-  // 시군구는 281개라 전체를 한 번에 보여주면 고를 수 없다. 고른 소속 안으로 좁힌다.
+  function buildRegionOptions() {
+    fillSelect(els.regionFilter, regionsInData(), filters.region, "지역");
+  }
+
   function buildDeptOptions() {
     const list = deptsForRegion(filters.region);
     if (!list.includes(filters.dept)) filters.dept = "";
-    const label = filters.region ? `${filters.region} 전체` : "전체";
-    els.deptFilter.innerHTML = [
-      `<option value="">${escapeHtml(label)}</option>`,
-      ...list.map((d) => `<option value="${escapeHtml(d)}"${d === filters.dept ? " selected" : ""}>${escapeHtml(d)}</option>`),
-    ].join("");
+    fillSelect(els.deptFilter, list, filters.dept, "회/부서검색");
   }
 
-  function activeFilterCount() {
-    return [filters.region, filters.dept, filters.position].filter(Boolean).length + (filters.hideVacant ? 1 : 0);
+  function buildPositionOptions() {
+    const list = SuchupSort.uniqueSortedPositions(CONTACTS.map((c) => c.position));
+    if (filters.position && !list.includes(filters.position)) filters.position = "";
+    fillSelect(els.positionFilter, list, filters.position, "직위검색");
   }
 
-  function syncFilterBadge() {
-    const n = activeFilterCount();
-    els.filterBadge.hidden = n === 0;
-    els.filterBadge.textContent = String(n);
-    els.filterBtn.classList.toggle("is-active", n > 0);
+  function syncFilterControls() {
+    buildRegionOptions();
+    buildDeptOptions();
+    buildPositionOptions();
+    els.hideVacant.checked = filters.hideVacant;
   }
 
   function getFiltered() {
@@ -157,7 +120,6 @@
     return SuchupSort.sortContacts(matched);
   }
 
-  /* ── 렌더 ───────────────────────────────────────────── */
   function toneOf(region) {
     const idx = SuchupOrg.REGION_NAMES.indexOf(region);
     return (idx < 0 ? 0 : idx) % 8;
@@ -180,41 +142,43 @@
     const digits = phoneDigits(contact.phone);
     const initial = vacant ? "—" : String(contact.name || "?").trim().charAt(0);
     const open = openIds.has(String(contact.id));
+    const region = contact.region || "";
+    const role = contact.position || contact.dept || (vacant ? VACANT : "—");
+    const phone = vacant ? VACANT : digits ? contact.phone : "번호 없음";
 
-    // 카드 본문을 누르면 상세가 열리므로, 목록에는 전화·문자만 둔다. (MDN: 아이콘만 늘리면 의미가 흐려진다)
-    const placeRole = [contact.dept, contact.position].filter(Boolean).join(" · ");
-    const orgLine = vacant
-      ? ""
-      : digits
-        ? contact.phone
-        : contact.region || "번호 없음";
-
-    const quick = vacant || !digits
-      ? ""
-      : `<div class="row__quick" role="group" aria-label="바로가기">
-          <a class="quick-btn" href="tel:${digits}">${ICON.phone}<span>전화</span></a>
-          <a class="quick-btn" href="sms:${digits}">${ICON.sms}<span>문자</span></a>
+    const actions = vacant
+      ? `<div class="row__bar row__bar--off" aria-hidden="true"></div>`
+      : `<div class="row__bar" role="group" aria-label="바로가기">
+          ${
+            digits
+              ? `<a class="row__action" href="tel:${digits}">${ICON.phone}<span>전화걸기</span></a>
+                 <a class="row__action" href="sms:${digits}">${ICON.sms}<span>문자전송</span></a>`
+              : `<span class="row__action row__action--off">${ICON.phone}<span>전화걸기</span></span>
+                 <span class="row__action row__action--off">${ICON.sms}<span>문자전송</span></span>`
+          }
+          <button type="button" class="row__action" data-save>${ICON.card}<span>연락처 저장</span></button>
         </div>`;
 
     return `<li class="row${vacant ? " row--vacant" : ""}${open ? " is-open" : ""}" data-id="${escapeHtml(contact.id)}">
       <article class="row__card">
-        <div class="row__layout">
-          <button type="button" class="row__hit" data-toggle aria-expanded="${open}">
-            ${avatarHtml(contact, initial)}
-            <span class="row__body">
+        <button type="button" class="row__hit" data-toggle aria-expanded="${open}">
+          ${avatarHtml(contact, initial)}
+          <span class="row__body">
+            <span class="row__title">
               <span class="row__name">${escapeHtml(contact.name)}</span>
-              <span class="row__role">${escapeHtml(placeRole || (vacant ? VACANT : "—"))}</span>
-              ${orgLine ? `<span class="row__org">${escapeHtml(orgLine)}</span>` : ""}
+              ${region ? `<span class="row__region">${escapeHtml(region)}</span>` : ""}
             </span>
-          </button>
-          ${quick}
-        </div>
+            <span class="row__role">${escapeHtml(role)}</span>
+            <span class="row__phone">${escapeHtml(phone)}</span>
+          </span>
+          <span class="row__caret" aria-hidden="true">${ICON.caret}</span>
+        </button>
+        ${actions}
+        <div class="row__panel"${open ? "" : " hidden"}></div>
       </article>
-      <div class="row__panel"${open ? "" : " hidden"}></div>
     </li>`;
   }
 
-  // "육사30" · "3사12"처럼 끝에 숫자만 붙은 값은 임관/기수로 나눈다.
   function splitCommission(contact) {
     const rawComm = String(contact.commission || "").trim();
     const rawClass = String(contact.classNo || "").trim();
@@ -227,7 +191,6 @@
   function detailHtml(contact) {
     const split = splitCommission(contact);
     const view = { ...contact, commission: split.commission, classNo: split.classNo };
-
     const rows = DETAIL_FIELDS.map(([label, key]) => {
       const value = view[key];
       if (!value) return "";
@@ -238,20 +201,11 @@
       ? `<dl class="detail-grid">${rows}</dl>`
       : `<p class="detail-empty">등록된 추가 정보가 없습니다.</p>`;
 
-    const digits = phoneDigits(contact.phone);
-    const actions = digits
-      ? `<div class="row__actions">
-          <a class="row-action" href="tel:${digits}">${ICON.phone}<span>전화</span></a>
-          <a class="row-action" href="sms:${digits}">${ICON.sms}<span>문자</span></a>
-          <button type="button" class="row-action" data-save>${ICON.card}<span>저장</span></button>
-        </div>`
-      : "";
-
     const photo = isAvatarUrl(contact.avatar)
       ? `<div class="detail-photo"><img src="${escapeHtml(String(contact.avatar).trim())}" alt="" loading="lazy" decoding="async" /></div>`
       : "";
 
-    return photo + body + actions + remarkHtml(contact);
+    return photo + body + remarkHtml(contact);
   }
 
   function remarkHtml(contact) {
@@ -277,7 +231,6 @@
     </div>`;
   }
 
-  // 소속으로 묶어 스티키 머리글을 만든다. 정렬이 이미 소속 순서라 이어서 끊기만 하면 된다.
   function groupByRegion(list) {
     const groups = [];
     for (const contact of list) {
@@ -293,10 +246,7 @@
     const groups = groupByRegion(filtered);
 
     els.resultCount.hidden = false;
-    els.resultCount.textContent =
-      filtered.length === CONTACTS.length
-        ? `총 ${CONTACTS.length}명`
-        : `${filtered.length}명 · 전체 ${CONTACTS.length}명`;
+    els.resultCount.textContent = `총 ${filtered.length}명`;
 
     els.contactList.innerHTML = groups
       .map(
@@ -307,7 +257,6 @@
       )
       .join("");
 
-    // 펼쳐 둔 줄은 상세를 다시 채워 준다.
     els.contactList.querySelectorAll(".row.is-open").forEach((li) => {
       const contact = findContact(li.dataset.id);
       if (contact) li.querySelector(".row__panel").innerHTML = detailHtml(contact);
@@ -327,11 +276,10 @@
     }
   }
 
-  /* ── 동작 ───────────────────────────────────────────── */
   function toggleRow(li) {
     const id = li.dataset.id;
     const contact = findContact(id);
-    if (!contact) return;
+    if (!contact || isVacant(contact)) return;
     const panel = li.querySelector(".row__panel");
     const opening = !li.classList.contains("is-open");
 
@@ -385,27 +333,6 @@
     els.drawerBackdrop.hidden = !open;
   }
 
-  function setSheetOpen(open) {
-    if (open) {
-      els.regionSheet.hidden = true;
-      els.regionPicker.setAttribute("aria-expanded", "false");
-    }
-    els.filterSheet.hidden = !open;
-    if (open) els.filterSheet.querySelector(".sheet__panel").focus?.();
-  }
-
-  function setRegionSheetOpen(open) {
-    if (open) els.filterSheet.hidden = true;
-    els.regionSheet.hidden = !open;
-    els.regionPicker.setAttribute("aria-expanded", String(open));
-    if (open) {
-      const selected = els.regionList.querySelector('[aria-selected="true"]');
-      selected?.scrollIntoView({ block: "nearest" });
-      els.regionSheet.querySelector(".sheet__panel").focus?.();
-    }
-  }
-
-  /* ── 데이터 ─────────────────────────────────────────── */
   async function loadContacts() {
     setUiMode("loading");
     try {
@@ -419,10 +346,7 @@
         throw new Error((data && data.error) || "연락처를 불러오지 못했습니다.");
       }
       CONTACTS = (Array.isArray(data?.contacts) ? data.contacts : []).map(withHaystack);
-      buildRegionChips();
-      buildPositionChips();
-      buildDeptOptions();
-      syncFilterBadge();
+      syncFilterControls();
       setUiMode("ready");
       render();
     } catch (err) {
@@ -433,7 +357,6 @@
     }
   }
 
-  // 검색어를 칠 때마다 13개 필드를 다시 이어 붙이지 않도록 한 번만 만들어 둔다.
   function withHaystack(contact) {
     contact._haystack = [
       contact.name,
@@ -478,7 +401,6 @@
     }
   }
 
-  /* ── 이벤트 ─────────────────────────────────────────── */
   function bindEvents() {
     let searchTimer = 0;
     els.searchInput.addEventListener("input", () => {
@@ -496,65 +418,29 @@
       render();
     });
 
-    els.regionPicker.addEventListener("click", () => {
-      setRegionSheetOpen(els.regionSheet.hidden);
-    });
-
-    els.regionList.addEventListener("click", (e) => {
-      const option = e.target.closest("[data-region]");
-      if (!option) return;
-      filters.region = option.dataset.region;
+    els.regionFilter.addEventListener("change", () => {
+      filters.region = els.regionFilter.value;
       filters.dept = "";
-      buildRegionChips();
       buildDeptOptions();
-      syncFilterBadge();
       openIds.clear();
       render();
-      setRegionSheetOpen(false);
       els.contactList.closest(".list-scroll")?.scrollTo({ top: 0 });
-    });
-
-    els.regionSheet.addEventListener("click", (e) => {
-      if (e.target.closest("[data-region-close]")) setRegionSheetOpen(false);
-    });
-
-    els.positionChips.addEventListener("click", (e) => {
-      const chip = e.target.closest("[data-position]");
-      if (!chip) return;
-      filters.position = chip.dataset.position;
-      buildPositionChips();
-      syncFilterBadge();
-      render();
     });
 
     els.deptFilter.addEventListener("change", () => {
       filters.dept = els.deptFilter.value;
-      syncFilterBadge();
+      openIds.clear();
+      render();
+    });
+
+    els.positionFilter.addEventListener("change", () => {
+      filters.position = els.positionFilter.value;
+      openIds.clear();
       render();
     });
 
     els.hideVacant.addEventListener("change", () => {
       filters.hideVacant = els.hideVacant.checked;
-      syncFilterBadge();
-      render();
-    });
-
-    els.filterBtn.addEventListener("click", () => setSheetOpen(true));
-    els.filterApply.addEventListener("click", () => setSheetOpen(false));
-    els.filterSheet.addEventListener("click", (e) => {
-      if (e.target.closest("[data-sheet-close]")) setSheetOpen(false);
-    });
-
-    els.filterReset.addEventListener("click", () => {
-      filters.region = "";
-      filters.dept = "";
-      filters.position = "";
-      filters.hideVacant = false;
-      els.hideVacant.checked = false;
-      buildRegionChips();
-      buildPositionChips();
-      buildDeptOptions();
-      syncFilterBadge();
       render();
     });
 
@@ -591,7 +477,6 @@
       if (e.target.closest("[data-toggle], .row__hit")) toggleRow(li);
     });
 
-    // 사진 로드 실패 시 이니셜로 되돌린다.
     els.contactList.addEventListener(
       "error",
       (e) => {
@@ -625,7 +510,6 @@
         });
         const idx = CONTACTS.findIndex((c) => String(c.id) === String(id));
         if (idx >= 0 && data.contact) CONTACTS[idx] = withHaystack(data.contact);
-        // 목록 전체를 다시 그리지 않고 펼쳐진 상세만 갈아 끼운다.
         li.querySelector(".row__panel").innerHTML = detailHtml(CONTACTS[idx]);
       } catch (ex) {
         err.hidden = false;
@@ -646,10 +530,7 @@
     });
 
     document.addEventListener("keydown", (e) => {
-      if (e.key !== "Escape") return;
-      if (!els.regionSheet.hidden) setRegionSheetOpen(false);
-      else if (!els.filterSheet.hidden) setSheetOpen(false);
-      else setDrawerOpen(false);
+      if (e.key === "Escape") setDrawerOpen(false);
     });
   }
 
