@@ -69,14 +69,8 @@
   function showExcelMsg(msg, isError) {
     els.excelMsg.hidden = !msg;
     els.excelMsg.textContent = msg || "";
-    els.excelMsg.classList.toggle("status-msg--error", !!isError);
-    if (!isError) {
-      els.excelMsg.style.background = "#ecfdf5";
-      els.excelMsg.style.color = "#047857";
-    } else {
-      els.excelMsg.style.background = "";
-      els.excelMsg.style.color = "";
-    }
+    els.excelMsg.classList.toggle("admin-panel__msg--error", !!isError);
+    els.excelMsg.classList.toggle("admin-panel__msg--ok", !!msg && !isError);
   }
 
   function fillForm(contact) {
@@ -121,16 +115,18 @@
 
   function render() {
     els.count.textContent = contacts.length + "\uBA85";
+    // data-label 은 좁은 화면에서 표가 카드로 바뀔 때 항목 이름으로 쓰인다.
     els.body.innerHTML = contacts
       .map(
         (c) => `
       <tr>
-        <td>${escapeHtml(c.name)}</td>
-        <td>${escapeHtml(c.dept || "")}</td>
-        <td>${escapeHtml(c.position || "")}</td>
-        <td>${escapeHtml(c.phone || "")}</td>
-        <td>${escapeHtml(c.militaryBranch || "")}</td>
-        <td>${escapeHtml(c.militaryRank || "")}</td>
+        <td data-label="\uC131\uBA85" class="admin-table__name">${escapeHtml(c.name)}</td>
+        <td data-label="\uC18C\uC18D">${escapeHtml(c.region || "")}</td>
+        <td data-label="\uC2DC\uAD70\uAD6C">${escapeHtml(c.dept || "")}</td>
+        <td data-label="\uC9C1\uC704">${escapeHtml(c.position || "")}</td>
+        <td data-label="\uC5F0\uB77D\uCC98">${escapeHtml(c.phone || "")}</td>
+        <td data-label="\uAD70\uBCC4">${escapeHtml(c.militaryBranch || "")}</td>
+        <td data-label="\uACC4\uAE09">${escapeHtml(c.militaryRank || "")}</td>
         <td>
           <div class="row-actions">
             <button type="button" data-edit="${escapeHtml(c.id)}">\uC218\uC815</button>
@@ -259,6 +255,40 @@
     }
   });
 
+  // 한 요청에 많이 담으면 서버 실행 한도에 걸려 일부만 반영된다. 나눠 보내고 실패하면 다시 시도한다.
+  const IMPORT_CHUNK = 20;
+
+  async function importChunk(chunk) {
+    let lastError = null;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        return await SuchupAuth.api("/api/contacts/import", {
+          method: "POST",
+          body: JSON.stringify({ contacts: chunk }),
+        });
+      } catch (err) {
+        // 권한·형식 문제는 다시 시도해도 같으므로 바로 알린다.
+        if (err.status && err.status < 500) throw err;
+        lastError = err;
+        await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
+      }
+    }
+    throw lastError;
+  }
+
+  async function importInChunks(contacts) {
+    const total = { inserted: 0, updated: 0, skipped: 0 };
+    for (let i = 0; i < contacts.length; i += IMPORT_CHUNK) {
+      const result = await importChunk(contacts.slice(i, i + IMPORT_CHUNK));
+      total.inserted += result.inserted;
+      total.updated += result.updated;
+      total.skipped += result.skipped;
+      const done = Math.min(i + IMPORT_CHUNK, contacts.length);
+      showExcelMsg(`\uC5C5\uB85C\uB4DC \uC911... ${done} / ${contacts.length}`, false);
+    }
+    return total;
+  }
+
   els.excelTemplateBtn.addEventListener("click", () => {
     try {
       SuchupExcel.downloadTemplate();
@@ -276,12 +306,9 @@
     showExcelMsg("\uC5C5\uB85C\uB4DC \uC911...", false);
     try {
       const parsed = await SuchupExcel.parseFile(file);
-      const result = await SuchupAuth.api("/api/contacts/import", {
-        method: "POST",
-        body: JSON.stringify({ contacts: parsed }),
-      });
+      const total = await importInChunks(parsed);
       showExcelMsg(
-        `\uC5D1\uC140 \uBC18\uC601 \uC644\uB8CC: \uCD94\uAC00 ${result.inserted}\uAC74, \uC218\uC815 ${result.updated}\uAC74, \uC0DD\uB7B5 ${result.skipped}\uAC74`,
+        `\uC5D1\uC140 \uBC18\uC601 \uC644\uB8CC: \uCD94\uAC00 ${total.inserted}\uAC74, \uC218\uC815 ${total.updated}\uAC74, \uC0DD\uB7B5 ${total.skipped}\uAC74`,
         false
       );
       els.excelFile.value = "";

@@ -1,0 +1,174 @@
+/* 색·간격·글자 크기는 여기서만 정의한다. 다른 CSS 는 이 변수만 쓴다. */
+
+:root {
+  /* 재향군인회 네이비 (assets/logo.svg 의 #1a4a7a~#0d2d4d 계열) */
+  --navy-50: #eff4fa;
+  --navy-100: #dbe7f4;
+  --navy-200: #bbd0e8;
+  --navy-300: #8fb0d6;
+  --navy-400: #5e88bf;
+  --navy-500: #3c6aa8;
+  --navy-600: #2a5f9e;
+  --navy-700: #214e84;
+  --navy-800: #1d406b;
+  --navy-900: #1a3556;
+  --navy-950: #101f33;
+
+  --slate-0: #ffffff;
+  --slate-50: #f7f9fc;
+  --slate-100: #eef2f7;
+  --slate-200: #e1e7f0;
+  --slate-300: #cbd4e1;
+  --slate-400: #94a1b8;
+  --slate-500: #6a7789;
+  --slate-600: #4c586a;
+  --slate-700: #344052;
+  --slate-800: #1e2838;
+  --slate-900: #131b28;
+  --slate-950: #0a111c;
+
+  --red-500: #d92d20;
+  --red-600: #b42318;
+  --green-600: #067647;
+  --amber-500: #b54708;
+
+  /* 여백 */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+
+  /* 글자 */
+  --font: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --fs-2xs: 0.69rem;
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.82rem;
+  --fs-md: 0.92rem;
+  --fs-base: 1rem;
+  --fs-lg: 1.12rem;
+  --fs-xl: 1.3rem;
+
+  /* 모서리 */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 20px;
+  --r-full: 999px;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --app-max: 560px;
+
+  /* 노치·홈바 */
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+}
+
+/* 라이트 */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: var(--slate-100);
+  --bg-grad: radial-gradient(900px 420px at 50% -12%, #ffffff 0%, transparent 62%),
+    linear-gradient(180deg, #e6ecf5 0%, var(--slate-100) 46%);
+  --surface: var(--slate-0);
+  --surface-2: var(--slate-50);
+  --surface-sunken: var(--slate-100);
+
+  --border: var(--slate-200);
+  --border-strong: var(--slate-300);
+  --hairline: rgba(42, 95, 158, 0.1);
+
+  --text: #152033;
+  --text-muted: var(--slate-500);
+  --text-soft: var(--slate-400);
+
+  --brand: var(--navy-600);
+  --brand-hover: var(--navy-700);
+  --brand-fg: #ffffff;
+  --brand-soft: var(--navy-50);
+  --brand-soft-fg: var(--navy-700);
+
+  --danger: var(--red-600);
+  --danger-soft: #fef3f2;
+  --success: var(--green-600);
+  --success-soft: #ecfdf3;
+
+  --shadow-1: 0 1px 2px rgba(16, 31, 51, 0.05);
+  --shadow-2: 0 1px 2px rgba(16, 31, 51, 0.04), 0 6px 18px rgba(16, 31, 51, 0.07);
+  --shadow-3: 0 2px 4px rgba(16, 31, 51, 0.05), 0 16px 34px rgba(16, 31, 51, 0.12);
+  --overlay: rgba(15, 23, 42, 0.4);
+}
+
+/* 관리자·로그인 CSS 가 아직 쓰는 옛 이름. 새 토큰을 가리키기만 한다. */
+:root,
+[data-theme="light"],
+[data-theme="dark"] {
+  --radius: var(--r-lg);
+  --accent: var(--brand);
+  --accent-soft: var(--brand-soft);
+  --shadow: var(--shadow-2);
+  --shadow-hover: var(--shadow-3);
+}
+
+/* 다크 */
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: var(--slate-950);
+  --bg-grad: radial-gradient(900px 420px at 50% -12%, #17273c 0%, transparent 62%),
+    linear-gradient(180deg, #0d1726 0%, var(--slate-950) 46%);
+  --surface: #141d2b;
+  --surface-2: #1a2433;
+  --surface-sunken: #0f1826;
+
+  --border: #27334a;
+  --border-strong: #36445f;
+  --hairline: rgba(143, 176, 214, 0.14);
+
+  --text: #e9eef6;
+  --text-muted: #97a4ba;
+  --text-soft: #6d7b92;
+
+  --brand: #6f9fd8;
+  --brand-hover: #89b3e4;
+  --brand-fg: #0a111c;
+  --brand-soft: rgba(111, 159, 216, 0.14);
+  --brand-soft-fg: #a8c8ec;
+
+  --danger: #f0776a;
+  --danger-soft: rgba(240, 119, 106, 0.14);
+  --success: #5fc48d;
+  --success-soft: rgba(95, 196, 141, 0.14);
+
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-2: 0 1px 2px rgba(0, 0, 0, 0.35), 0 6px 18px rgba(0, 0, 0, 0.45);
+  --shadow-3: 0 2px 4px rgba(0, 0, 0, 0.4), 0 16px 34px rgba(0, 0, 0, 0.55);
+  --overlay: rgba(3, 8, 16, 0.62);
+}
+
+/* 소속별 아바타 색. 목록이 소속으로 묶여 있어 같은 묶음은 같은 색 띠가 된다. */
+:root {
+  --tone-0-bg: #e3edf9; --tone-0-fg: #1f4e87;
+  --tone-1-bg: #e5f1ec; --tone-1-fg: #1c6047;
+  --tone-2-bg: #f3ebe0; --tone-2-fg: #7a5320;
+  --tone-3-bg: #ece9f7; --tone-3-fg: #4b3f96;
+  --tone-4-bg: #fae9ec; --tone-4-fg: #9c2d43;
+  --tone-5-bg: #e2f0f4; --tone-5-fg: #1c5c72;
+  --tone-6-bg: #eff0e2; --tone-6-fg: #5a6320;
+  --tone-7-bg: #f6e9f4; --tone-7-fg: #8a2f7c;
+}
+
+[data-theme="dark"] {
+  --tone-0-bg: rgba(88, 140, 205, 0.2); --tone-0-fg: #9cc2ee;
+  --tone-1-bg: rgba(66, 176, 133, 0.18); --tone-1-fg: #85d6b1;
+  --tone-2-bg: rgba(198, 148, 74, 0.18); --tone-2-fg: #e0b578;
+  --tone-3-bg: rgba(139, 122, 224, 0.18); --tone-3-fg: #b6aaf0;
+  --tone-4-bg: rgba(219, 106, 133, 0.18); --tone-4-fg: #eda3b5;
+  --tone-5-bg: rgba(80, 165, 195, 0.18); --tone-5-fg: #8fcfe2;
+  --tone-6-bg: rgba(155, 168, 74, 0.18); --tone-6-fg: #c6d182;
+  --tone-7-bg: rgba(198, 108, 185, 0.18); --tone-7-fg: #e3a6da;
+}

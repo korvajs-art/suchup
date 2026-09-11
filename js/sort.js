@@ -37,9 +37,9 @@ window.SuchupSort = (() => {
     return uniqueSortedBy(values, regionRank);
   }
 
-  // 필터 목록은 소속 구분 없이 모이므로 전체 기준 순서를 쓴다.
-  function uniqueSortedDepts(values) {
-    return uniqueSortedBy(values, (d) => deptRank("", d));
+  // 시군구 이름은 소속끼리 겹치므로(서구·중구 등) 소속을 알면 그 안의 순서를 쓴다.
+  function uniqueSortedDepts(values, region = "") {
+    return uniqueSortedBy(values, (d) => deptRank(region, d));
   }
 
   function uniqueSortedPositions(values) {
