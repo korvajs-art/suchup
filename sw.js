@@ -1,7 +1,7 @@
 /* 앱처럼 설치할 수 있게 하는 최소 서비스 워커.
    HTML·CSS·JS 는 네트워크를 먼저 보고, 실패할 때만 캐시를 쓴다.
    연락처 API 는 캐시하지 않는다. */
-const CACHE = "suchup-shell-v4";
+const CACHE = "suchup-shell-v6";
 const SHELL = [
   "./",
   "./index.html",

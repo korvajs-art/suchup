@@ -70,8 +70,6 @@
     phone: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.4 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.9.6 2.8.7A2 2 0 0 1 22 16.9z"/></svg>`,
     sms: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.5 9.5 9.5 0 0 1-3-.5L3 21l1.5-4a8.4 8.4 0 0 1-.5-3 8.4 8.4 0 0 1 9-8.5 8.4 8.4 0 0 1 8 6z"/></svg>`,
     card: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="11" r="2.2"/><path d="M5.8 17a3.4 3.4 0 0 1 6.4 0M15 9h4M15 13h4"/></svg>`,
-    info: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 19.2a6.5 6.5 0 0 1 13 0"/><circle cx="12" cy="12" r="9.2"/></svg>`,
-    more: `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>`,
   };
 
   /* ── 필터 ───────────────────────────────────────────── */
@@ -149,13 +147,25 @@
     return (idx < 0 ? 0 : idx) % 8;
   }
 
+  function isAvatarUrl(src) {
+    return /^(https?:\/\/|data:image\/)/i.test(String(src || "").trim());
+  }
+
+  function avatarHtml(contact, initial) {
+    const src = String(contact.avatar || "").trim();
+    if (isAvatarUrl(src)) {
+      return `<span class="row__avatar row__avatar--photo" data-initial="${escapeHtml(initial)}" aria-hidden="true"><img class="row__avatar-img" src="${escapeHtml(src)}" alt="" loading="lazy" decoding="async" /></span>`;
+    }
+    return `<span class="row__avatar" data-tone="${toneOf(contact.region)}" data-initial="${escapeHtml(initial)}" aria-hidden="true">${escapeHtml(initial)}</span>`;
+  }
+
   function rowHtml(contact) {
     const vacant = isVacant(contact);
     const digits = phoneDigits(contact.phone);
     const initial = vacant ? "—" : String(contact.name || "?").trim().charAt(0);
     const open = openIds.has(String(contact.id));
 
-    // 모바일노트 회원목록처럼 직위·소속을 이름 아래로 두고, 바로가기는 원형 아이콘으로 둔다.
+    // 카드 본문을 누르면 상세가 열리므로, 목록에는 전화·문자만 둔다. (MDN: 아이콘만 늘리면 의미가 흐려진다)
     const placeRole = [contact.dept, contact.position].filter(Boolean).join(" · ");
     const orgLine = vacant
       ? ""
@@ -163,26 +173,18 @@
         ? contact.phone
         : contact.region || "번호 없음";
 
-    const quick = vacant
+    const quick = vacant || !digits
       ? ""
       : `<div class="row__quick" role="group" aria-label="바로가기">
-          ${
-            digits
-              ? `<a class="quick-btn" href="tel:${digits}" aria-label="${escapeHtml(contact.name)} 전화">${ICON.phone}</a>
-                 <a class="quick-btn" href="sms:${digits}" aria-label="${escapeHtml(contact.name)} 문자">${ICON.sms}</a>`
-              : `<span class="quick-btn quick-btn--off" aria-hidden="true">${ICON.phone}</span>
-                 <span class="quick-btn quick-btn--off" aria-hidden="true">${ICON.sms}</span>`
-          }
-          <button type="button" class="quick-btn" data-toggle aria-label="상세 정보" aria-expanded="${open}">${ICON.info}</button>
-          <button type="button" class="quick-btn" data-save aria-label="연락처 저장">${ICON.card}</button>
+          <a class="quick-btn" href="tel:${digits}">${ICON.phone}<span>전화</span></a>
+          <a class="quick-btn" href="sms:${digits}">${ICON.sms}<span>문자</span></a>
         </div>`;
 
     return `<li class="row${vacant ? " row--vacant" : ""}${open ? " is-open" : ""}" data-id="${escapeHtml(contact.id)}">
       <article class="row__card">
-        <button type="button" class="row__more" data-toggle aria-label="더보기" aria-expanded="${open}">${ICON.more}</button>
         <div class="row__layout">
           <button type="button" class="row__hit" data-toggle aria-expanded="${open}">
-            <span class="row__avatar" data-tone="${toneOf(contact.region)}" aria-hidden="true">${escapeHtml(initial)}</span>
+            ${avatarHtml(contact, initial)}
             <span class="row__body">
               <span class="row__name">${escapeHtml(contact.name)}</span>
               <span class="row__role">${escapeHtml(placeRole || (vacant ? VACANT : "—"))}</span>
@@ -229,7 +231,11 @@
         </div>`
       : "";
 
-    return body + actions + remarkHtml(contact);
+    const photo = isAvatarUrl(contact.avatar)
+      ? `<div class="detail-photo"><img src="${escapeHtml(String(contact.avatar).trim())}" alt="" loading="lazy" decoding="async" /></div>`
+      : "";
+
+    return photo + body + actions + remarkHtml(contact);
   }
 
   function remarkHtml(contact) {
@@ -542,8 +548,23 @@
       }
 
       if (e.target.closest("a[href^='tel:'], a[href^='sms:'], [data-save]")) return;
-      if (e.target.closest("[data-toggle], .row__hit, .row__more")) toggleRow(li);
+      if (e.target.closest("[data-toggle], .row__hit")) toggleRow(li);
     });
+
+    // 사진 로드 실패 시 이니셜로 되돌린다.
+    els.contactList.addEventListener(
+      "error",
+      (e) => {
+        const img = e.target;
+        if (!(img instanceof HTMLImageElement) || !img.classList.contains("row__avatar-img")) return;
+        const wrap = img.closest(".row__avatar");
+        if (!wrap) return;
+        wrap.classList.remove("row__avatar--photo");
+        img.remove();
+        wrap.textContent = wrap.dataset.initial || "?";
+      },
+      true
+    );
 
     els.contactList.addEventListener("submit", async (e) => {
       const form = e.target.closest("[data-remark-form]");
